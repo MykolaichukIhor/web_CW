@@ -1,3 +1,9 @@
+<!--
+    Photo Editor Page - Desktop Version
+    Full-featured image editor with real-time preview, crop functionality,
+    adjustment sliders, filters, and save-as capability.
+    Includes theme toggle, language selection, and edit history tracking.
+-->
 <!DOCTYPE html>
 <html data-bs-theme="light">
 <head>
@@ -6,37 +12,46 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>{% trans "Edit Photo" %}</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
+    
+    <!-- Bootstrap 5.3.8 CSS with integrity hash for security -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" 
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    
     <style>
-        /* ========== СВІТЛА ТЕМА ========== */
+        /* ========== LIGHT THEME (Default) ========== */
         body {
-            background: #fffff0;
+            background: #fffff0;  /* Warm white for reduced eye strain */
             transition: background 0.3s ease, color 0.3s ease;
         }
         
-        /* ========== ТЕМНА ТЕМА ========== */
+        /* ========== DARK THEME OVERRIDES ========== */
+        
+        /* Pure black background for OLED optimization */
         [data-bs-theme="dark"] body {
             background: #000000;
             color: #ffffff;
         }
         
+        /* Card with subtle transparency in dark mode */
         [data-bs-theme="dark"] .card {
             background-color: rgba(255, 255, 255, 0.05);
             border-color: rgba(255, 255, 255, 0.1);
         }
         
+        /* Card header with slightly lighter background */
         [data-bs-theme="dark"] .card-header {
             background-color: rgba(255, 255, 255, 0.08);
             border-bottom-color: rgba(255, 255, 255, 0.1);
             color: #ffffff;
         }
         
+        /* Card footer matching dark theme */
         [data-bs-theme="dark"] .card-footer {
             background-color: rgba(255, 255, 255, 0.05);
             border-top-color: rgba(255, 255, 255, 0.1);
         }
         
+        /* Outline buttons with improved visibility in dark mode */
         [data-bs-theme="dark"] .btn-outline-secondary {
             color: rgba(255, 255, 255, 0.8);
             border-color: rgba(255, 255, 255, 0.3);
@@ -48,6 +63,7 @@
             border-color: rgba(255, 255, 255, 0.5);
         }
         
+        /* Primary outline button - preserves brand color with dark border */
         [data-bs-theme="dark"] .btn-outline-primary {
             border-color: rgba(13, 110, 253, 0.5);
             color: #0d6efd;
@@ -58,6 +74,7 @@
             color: #ffffff;
         }
         
+        /* Warning button for reset functionality */
         [data-bs-theme="dark"] .btn-outline-warning {
             color: #ffc107;
             border-color: rgba(255, 193, 7, 0.5);
@@ -68,6 +85,7 @@
             color: #000000;
         }
         
+        /* Dark outline button with custom styling */
         [data-bs-theme="dark"] .btn-outline-dark {
             background: rgba(255, 255, 255, 0.1);
             color: #ffffff;
@@ -80,10 +98,12 @@
             border-color: rgba(255, 255, 255, 0.4);
         }
         
+        /* Form labels with reduced opacity for visual hierarchy */
         [data-bs-theme="dark"] .form-label {
             color: rgba(255, 255, 255, 0.8);
         }
         
+        /* Form controls with semi-transparent background */
         [data-bs-theme="dark"] .form-control,
         [data-bs-theme="dark"] .form-select {
             background: rgba(255, 255, 255, 0.1);
@@ -91,6 +111,7 @@
             color: #ffffff;
         }
         
+        /* Focus state with Bootstrap blue glow */
         [data-bs-theme="dark"] .form-control:focus,
         [data-bs-theme="dark"] .form-select:focus {
             background: rgba(255, 255, 255, 0.15);
@@ -99,6 +120,7 @@
             box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
         }
         
+        /* Range slider track and thumb styling for dark mode */
         [data-bs-theme="dark"] .form-range::-webkit-slider-runnable-track {
             background: rgba(255, 255, 255, 0.2);
         }
@@ -107,10 +129,15 @@
             background: #0d6efd;
         }
         
+        /* Checkbox label color */
         [data-bs-theme="dark"] .form-check-label {
             color: rgba(255, 255, 255, 0.8);
         }
         
+        /* 
+         * Range value display (editable number next to slider)
+         * Shows current value and allows direct number input
+         */
         [data-bs-theme="dark"] .range-value {
             color: rgba(255, 255, 255, 0.6);
         }
@@ -120,6 +147,7 @@
             border-color: rgba(255, 255, 255, 0.3);
         }
         
+        /* Editing state when user clicks to input number directly */
         [data-bs-theme="dark"] .range-value.editing {
             border-color: #0d6efd;
             background: rgba(255, 255, 255, 0.15);
@@ -129,6 +157,7 @@
             color: #ffffff;
         }
         
+        /* Close button for panels and modals */
         [data-bs-theme="dark"] .close-btn {
             color: rgba(255, 255, 255, 0.6);
         }
@@ -137,6 +166,10 @@
             color: #ffffff;
         }
         
+        /* 
+         * Modal dialogs in dark mode
+         * Solid background for better readability
+         */
         [data-bs-theme="dark"] .filter-modal,
         [data-bs-theme="dark"] .saveas-modal {
             background: #1a1a1a;
@@ -149,6 +182,7 @@
             color: #ffffff;
         }
         
+        /* Save-as modal input styling */
         [data-bs-theme="dark"] .saveas-modal input {
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.2);
@@ -159,33 +193,35 @@
             color: rgba(255, 255, 255, 0.5);
         }
         
+        /* Modal overlays with dark semi-transparent background */
         [data-bs-theme="dark"] .filter-modal-overlay,
         [data-bs-theme="dark"] .saveas-modal-overlay {
             background: rgba(0, 0, 0, 0.7);
         }
         
+        /* Muted text override for dark mode */
         [data-bs-theme="dark"] .text-muted {
             color: rgba(255, 255, 255, 0.5) !important;
         }
         
+        /* Control section headings */
         [data-bs-theme="dark"] .control-section h5 {
             color: rgba(255, 255, 255, 0.7);
         }
         
-
-        [data-bs-theme="dark"] .control-section h5 {
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        /* ========== НЕПРОЗОРА ПАНЕЛЬ НАЛАШТУВАНЬ (ТЕМНА ТЕМА) ========== */
+        /* 
+         * EDIT PANEL - Opaque dark background
+         * Uses !important to override Bootstrap card styles
+         * Solid background ensures readability of adjustment controls
+         */
         [data-bs-theme="dark"] .edit-panel {
-            background-color: #121212 !important; 
+            background-color: #121212 !important;
             border: 1px solid #333 !important;
-            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.8); 
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.8);
         }
 
         [data-bs-theme="dark"] .edit-panel .card-header {
-            background-color: #1a1a1a !important; 
+            background-color: #1a1a1a !important;
             border-bottom: 1px solid #333 !important;
         }
 
@@ -193,12 +229,19 @@
             background-color: #121212 !important;
         }
 
-        /* ========== ЗАГАЛЬНІ СТИЛІ ========== */
+        /* ========== GENERAL STYLES ========== */
+        
+        /*
+         * Edit panel - slide-in adjustment panel
+         * Fixed position on the right side
+         * Transforms off-screen when closed, slides in when open
+         * max-height with overflow-y for scrollable controls
+         */
         .edit-panel {
             max-height: calc(100vh - 160px);
             overflow-y: auto;
             transition: transform 0.25s ease-in-out, opacity 0.25s ease-in-out;
-            transform: translateX(110%);
+            transform: translateX(110%);  /* Start off-screen to the right */
             opacity: 0;
             position: fixed;
             right: 1rem;
@@ -206,43 +249,73 @@
             width: 340px;
             z-index: 10;
         }
+        
+        /* Open state - slides panel into view */
         .edit-panel.open {
             transform: translateX(0);
             opacity: 1;
         }
+        
+        /* Control section spacing */
         .control-section {
             margin-bottom: 1.5rem;
         }
+        
         .control-section h5 {
             margin-bottom: .75rem;
             font-size: 1rem;
             font-weight: 600;
         }
+        
+        /* Preview container for relative positioning of overlays */
         .preview-container {
             position: relative;
             display: inline-block;
             max-width: 100%;
         }
+        
+        /* 
+         * Preview image constraints
+         * max-height: 80vh keeps image within viewport
+         * object-fit: contain maintains aspect ratio
+         */
         .preview-image {
             max-height: 80vh;
             width: 100%;
             object-fit: contain;
             display: block;
         }
+        
+        /* Top toolbar with flex layout and gap */
         .top-toolbar {
             gap: .75rem;
         }
+        
+        /* Crop tool row - centered alignment */
         .crop-tool-row {
             justify-content: center;
         }
+        
+        /* 
+         * Crop tools container
+         * Inline-flex for button grouping
+         * translateX(-20px) compensates for button padding asymmetry
+         */
         .crop-tools {
             display: inline-flex;
             gap: .75rem;
             transform: translateX(-20px);
         }
+        
+        /* Minimum width for crop tool buttons */
         .crop-tools .btn {
             min-width: 90px;
         }
+        
+        /* 
+         * Crop overlay - positioned over the image
+         * pointer-events: none when inactive prevents blocking image clicks
+         */
         .crop-overlay {
             position: absolute;
             top: 0;
@@ -252,30 +325,33 @@
             pointer-events: none;
             z-index: 5;
         }
+        
+        /* Active state enables interaction */
         .crop-overlay.active {
             pointer-events: all;
         }
+        
+        /* 
+         * Crop mask - darkened areas outside crop region
+         * Semi-transparent black creates visual focus on crop area
+         */
         .crop-mask {
             position: absolute;
             background: rgba(0, 0, 0, 0.5);
             pointer-events: none;
         }
-        .crop-mask.top {
-            top: 0;
-            left: 0;
-            right: 0;
-        }
-        .crop-mask.bottom {
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-        .crop-mask.left {
-            left: 0;
-        }
-        .crop-mask.right {
-            right: 0;
-        }
+        
+        /* Individual mask edges */
+        .crop-mask.top { top: 0; left: 0; right: 0; }
+        .crop-mask.bottom { left: 0; right: 0; bottom: 0; }
+        .crop-mask.left { left: 0; }
+        .crop-mask.right { right: 0; }
+        
+        /*
+         * Crop box - the actual selection area
+         * Dashed border when inactive, solid green when active
+         * box-shadow creates the darkened overlay effect
+         */
         .crop-box {
             position: absolute;
             border: 2px dashed #fff;
@@ -283,10 +359,17 @@
             cursor: move;
             z-index: 6;
         }
+        
         .crop-box.active {
             border-style: solid;
             border-color: #00ff00;
         }
+        
+        /* 
+         * Crop handles - resize controls at corners and edges
+         * 12px circles with green border for visibility
+         * Positioned at each corner and edge midpoint
+         */
         .crop-handle {
             position: absolute;
             width: 12px;
@@ -296,6 +379,8 @@
             border-radius: 50%;
             z-index: 7;
         }
+        
+        /* Handle positions with appropriate cursor styles */
         .crop-handle.nw { top: -6px; left: -6px; cursor: nw-resize; }
         .crop-handle.n { top: -6px; left: 50%; margin-left: -6px; cursor: n-resize; }
         .crop-handle.ne { top: -6px; right: -6px; cursor: ne-resize; }
@@ -304,6 +389,12 @@
         .crop-handle.s { bottom: -6px; left: 50%; margin-left: -6px; cursor: s-resize; }
         .crop-handle.sw { bottom: -6px; left: -6px; cursor: sw-resize; }
         .crop-handle.w { top: 50%; margin-top: -6px; left: -6px; cursor: w-resize; }
+        
+        /* 
+         * Crop controls (Apply/Cancel buttons)
+         * Hidden by default, shown when crop overlay is active
+         * Centered below the crop area
+         */
         .crop-controls {
             position: absolute;
             bottom: 2px;
@@ -316,14 +407,23 @@
             padding: 8px 12px;
             border-radius: 8px;
         }
+        
         .crop-overlay.active .crop-controls {
             display: flex;
         }
+        
+        /* Range label with flex layout for value display */
         .range-label {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
+        
+        /* 
+         * Range value display
+         * Clickable to allow direct number entry
+         * Shows current slider value
+         */
         .range-value {
             font-size: 0.8rem;
             color: #666;
@@ -335,15 +435,20 @@
             border: 1px solid transparent;
             transition: border-color 0.2s;
         }
+        
         .range-value:hover {
             border-color: #ccc;
             background: #f8f9fa;
         }
+        
+        /* Editing state - user is typing a value */
         .range-value.editing {
             border-color: #86b7fe;
             background: #fff;
             cursor: text;
         }
+        
+        /* Number input inside range value */
         .range-value input {
             width: 100%;
             border: none;
@@ -356,6 +461,8 @@
             color: #666;
             font-family: inherit;
         }
+        
+        /* Close button for panels */
         .close-btn {
             background: none;
             border: none;
@@ -365,9 +472,16 @@
             padding: 0;
             line-height: 1;
         }
+        
         .close-btn:hover {
             color: #000;
         }
+        
+        /* 
+         * Modal dialogs for filters and save-as
+         * Centered using transform: translate(-50%, -50%)
+         * Hidden by default, shown with .show class
+         */
         .filter-modal, .saveas-modal {
             display: none;
             position: fixed;
@@ -381,9 +495,12 @@
             z-index: 20;
             min-width: 350px;
         }
+        
         .filter-modal.show, .saveas-modal.show {
             display: block;
         }
+        
+        /* Modal overlay - blocks background interaction */
         .filter-modal-overlay, .saveas-modal-overlay {
             display: none;
             position: fixed;
@@ -394,13 +511,18 @@
             background: rgba(0,0,0,0.5);
             z-index: 15;
         }
+        
         .filter-modal-overlay.show, .saveas-modal-overlay.show {
             display: block;
         }
+        
+        /* Filter button spacing */
         .filter-btn {
             margin: 5px;
             min-width: 100px;
         }
+        
+        /* Save-as modal input */
         .saveas-modal input {
             width: 100%;
             padding: 8px;
@@ -408,11 +530,18 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+        
+        /* Button row for save-as modal */
         .saveas-modal .btn-row {
             display: flex;
             gap: 10px;
             justify-content: flex-end;
         }
+        
+        /* 
+         * RESPONSIVE: On smaller screens, panel becomes static
+         * No slide animation, full width below image
+         */
         @media (max-width: 992px) {
             .edit-panel {
                 position: static;
@@ -426,15 +555,24 @@
 </head>
 <body class="m-5">
     <div class="container-fluid">
+        <!-- 
+            TOP TOOLBAR
+            Contains action buttons and controls
+            Flex layout with wrapping for responsive design
+        -->
         <div class="row mb-3 align-items-center top-toolbar gx-2 gy-2">
+            <!-- Left side: action buttons -->
             <div class="col-auto d-flex flex-wrap gap-2">
                 <button type="button" class="btn btn-outline-secondary" onclick="goBackToGallery();">{% trans "Go Back" %}</button>
                 <button type="button" class="btn btn-outline-primary" onclick="saveAs();">{% trans "Save as" %}</button>
                 <button type="button" class="btn btn-primary" id="saveBtn" onclick="submitSave();">{% trans "Save" %}</button>
                 <button type="button" class="btn btn-outline-warning" onclick="resetChanges();">{% trans "Reset" %}</button>
             </div>
+            
+            <!-- Right side: language, theme, adjustments toggle -->
             <div class="col-auto ms-auto">
                 <div class="d-flex gap-2 align-items-center">
+                    <!-- Language selection form with auto-submit -->
                     <form action="{% url 'set_language' %}" method="post" id="lang-form">
                         {% csrf_token %}
                         <input name="next" type="hidden" value="{{ redirect_to }}" />
@@ -449,14 +587,19 @@
                             {% endfor %}
                         </select>
                     </form>
-                    <!-- Перемикач теми -->
+                    
+                    <!-- Theme toggle button -->
                     <button type="button" class="btn btn-sm btn-outline-dark" id="themeToggle" title="{% trans 'Toggle theme' %}">
                         <i class="fas fa-moon"></i>
                     </button>
+                    
+                    <!-- Toggle adjustment panel visibility -->
                     <button type="button" class="btn btn-sm btn-outline-dark" onclick="togglePanel();">{% trans "Adjustments" %}</button>
                 </div>
             </div>
         </div>
+        
+        <!-- Crop tool buttons row -->
         <div class="row mb-3 crop-tool-row">
             <div class="col-auto crop-tools">
                 <button type="button" class="btn btn-sm btn-outline-secondary" id="cropBtn">{% trans "Crop" %}</button>
@@ -465,13 +608,31 @@
             </div>
         </div>
 
+        <!-- 
+            EDIT FORM
+            Contains all hidden inputs for server-side processing
+            CSRF protection included
+        -->
         <form id="editForm" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
+            
+            <!-- Save-as mode flag -->
             <input type="hidden" name="save_as" id="saveAsField" value="">
+            
+            <!-- 
+                Crop coordinates stored as percentages
+                Values range 0-100 representing percentage of image dimensions
+            -->
             <input type="hidden" name="crop_x" id="cropX" value="0">
             <input type="hidden" name="crop_y" id="cropY" value="0">
             <input type="hidden" name="crop_w" id="cropW" value="100">
             <input type="hidden" name="crop_h" id="cropH" value="100">
+            
+            <!-- 
+                Hidden fields for all adjustment parameters
+                These are populated by JavaScript before form submission
+                Each corresponds to a server-side image processing parameter
+            -->
             <input type="hidden" name="brightness" id="hiddenBrightness" value="0">
             <input type="hidden" name="contrast" id="hiddenContrast" value="0">
             <input type="hidden" name="saturation" id="hiddenSaturation" value="0">
@@ -492,6 +653,8 @@
             <input type="hidden" name="noise" id="hiddenNoise" value="0">
             <input type="hidden" name="texture" id="hiddenTexture" value="0">
             <input type="hidden" name="straighten" id="hiddenStraighten" value="0">
+            
+            <!-- Image preview section -->
             <div class="row justify-content-center">
                 <div class="col-12 col-lg-8">
                     <div class="card mb-4">
@@ -499,10 +662,17 @@
                             <strong>{% trans "Image Preview" %}</strong>
                         </div>
                         <div class="card-body text-center">
+                            <!-- 
+                                Preview container holds image and crop overlay
+                                Relative positioning for absolute-positioned children
+                            -->
                             <div class="preview-container" id="previewContainer">
                                 <img id="photoPreview" src="{{ photo.image.url }}" alt="{% trans 'Photo' %}" class="img-fluid preview-image">
+                                
+                                <!-- Crop overlay system -->
                                 <div id="cropOverlay" class="crop-overlay">
                                     <div id="cropBox" class="crop-box" style="display: none;">
+                                        <!-- 8 handles for corner and edge resizing -->
                                         <div class="crop-handle nw" data-handle="nw"></div>
                                         <div class="crop-handle n" data-handle="n"></div>
                                         <div class="crop-handle ne" data-handle="ne"></div>
@@ -512,6 +682,7 @@
                                         <div class="crop-handle sw" data-handle="sw"></div>
                                         <div class="crop-handle w" data-handle="w"></div>
                                     </div>
+                                    <!-- Crop action buttons -->
                                     <div class="crop-controls" id="cropControls">
                                         <button type="button" class="btn btn-sm btn-success" onclick="applyCrop();">{% trans "Apply" %}</button>
                                         <button type="button" class="btn btn-sm btn-secondary" onclick="cancelCrop();">{% trans "Cancel" %}</button>
@@ -519,6 +690,8 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Card footer with metadata fields -->
                         <div class="card-footer">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -540,52 +713,74 @@
             </div>
         </form>
 
+        <!-- 
+            ADJUSTMENT PANEL
+            Slide-in panel with all image adjustment controls
+            Organized into sections: Core, Color, Detail, Geometry, Effects
+        -->
         <div id="editPanel" class="card edit-panel">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <strong>{% trans "Adjustment Panel" %}</strong>
                 <button type="button" class="close-btn" onclick="togglePanel();" aria-label="{% trans 'Close adjustments' %}">&times;</button>
             </div>
             <div class="card-body">
+                <!-- CORE ADJUSTMENTS: brightness, contrast, exposure, highlights, shadows -->
                 <div class="control-section">
                     <h5>{% trans "Core adjustments" %}</h5>
                     <label class="form-label range-label" for="brightness">{% trans "Brightness" %} <span class="range-value" id="brightnessValue" data-target="brightness" data-min="-100" data-max="100">0</span></label>
                     <input id="brightness" type="range" class="form-range" min="-100" max="100" value="0" oninput="updateValue('brightness')">
+                    
                     <label class="form-label range-label mt-3" for="contrast">{% trans "Contrast" %} <span class="range-value" id="contrastValue" data-target="contrast" data-min="-100" data-max="100">0</span></label>
                     <input id="contrast" type="range" class="form-range" min="-100" max="100" value="0" oninput="updateValue('contrast')">
+                    
                     <label class="form-label range-label mt-3" for="exposure">{% trans "Exposure" %} <span class="range-value" id="exposureValue" data-target="exposure" data-min="-100" data-max="100">0</span></label>
                     <input id="exposure" type="range" class="form-range" min="-100" max="100" value="0" oninput="updateValue('exposure')">
+                    
                     <label class="form-label range-label mt-3" for="highlights">{% trans "Highlights" %} <span class="range-value" id="highlightsValue" data-target="highlights" data-min="-100" data-max="100">0</span></label>
                     <input id="highlights" type="range" class="form-range" min="-100" max="100" value="0" oninput="updateValue('highlights')">
+                    
                     <label class="form-label range-label mt-3" for="shadows">{% trans "Shadows" %} <span class="range-value" id="shadowsValue" data-target="shadows" data-min="-100" data-max="100">0</span></label>
                     <input id="shadows" type="range" class="form-range" min="-100" max="100" value="0" oninput="updateValue('shadows')">
                 </div>
 
+                <!-- COLOR CONTROLS: saturation, vibrance, temperature, tint, hue -->
                 <div class="control-section">
                     <h5>{% trans "Color controls" %}</h5>
                     <label class="form-label range-label" for="saturation">{% trans "Saturation" %} <span class="range-value" id="saturationValue" data-target="saturation" data-min="-100" data-max="100">0</span></label>
                     <input id="saturation" type="range" class="form-range" min="-100" max="100" value="0" oninput="updateValue('saturation')">
+                    
                     <label class="form-label range-label mt-3" for="vibrance">{% trans "Vibrance" %} <span class="range-value" id="vibranceValue" data-target="vibrance" data-min="-100" data-max="100">0</span></label>
                     <input id="vibrance" type="range" class="form-range" min="-100" max="100" value="0" oninput="updateValue('vibrance')">
+                    
                     <label class="form-label range-label mt-3" for="temperature">{% trans "Temperature" %} <span class="range-value" id="temperatureValue" data-target="temperature" data-min="-100" data-max="100">0</span></label>
                     <input id="temperature" type="range" class="form-range" min="-100" max="100" value="0" oninput="updateValue('temperature')">
+                    
                     <label class="form-label range-label mt-3" for="tint">{% trans "Tint" %} <span class="range-value" id="tintValue" data-target="tint" data-min="-100" data-max="100">0</span></label>
                     <input id="tint" type="range" class="form-range" min="-100" max="100" value="0" oninput="updateValue('tint')">
+                    
+                    <!-- Hue has extended range (-180 to 180) for full color rotation -->
                     <label class="form-label range-label mt-3" for="hue">{% trans "Hue" %} <span class="range-value" id="hueValue" data-target="hue" data-min="-180" data-max="180">0</span></label>
                     <input id="hue" type="range" class="form-range" min="-180" max="180" value="0" oninput="updateValue('hue')">
                 </div>
 
+                <!-- DETAIL & SHARPNESS: sharpness, clarity, noise reduction, texture -->
                 <div class="control-section">
                     <h5>{% trans "Detail & sharpness" %}</h5>
                     <label class="form-label range-label" for="sharpness">{% trans "Sharpness" %} <span class="range-value" id="sharpnessValue" data-target="sharpness" data-min="-100" data-max="100">0</span></label>
                     <input id="sharpness" type="range" class="form-range" min="-100" max="100" value="0" oninput="updateValue('sharpness')">
+                    
                     <label class="form-label range-label mt-3" for="clarity">{% trans "Clarity" %} <span class="range-value" id="clarityValue" data-target="clarity" data-min="-100" data-max="100">0</span></label>
                     <input id="clarity" type="range" class="form-range" min="-100" max="100" value="0" oninput="updateValue('clarity')">
+                    
+                    <!-- Noise reduction starts at 0 (no reduction) -->
                     <label class="form-label range-label mt-3" for="noise">{% trans "Noise reduction" %} <span class="range-value" id="noiseValue" data-target="noise" data-min="0" data-max="100">0</span></label>
                     <input id="noise" type="range" class="form-range" min="0" max="100" value="0" oninput="updateValue('noise')">
+                    
                     <label class="form-label range-label mt-3" for="texture">{% trans "Texture" %} <span class="range-value" id="textureValue" data-target="texture" data-min="-100" data-max="100">0</span></label>
                     <input id="texture" type="range" class="form-range" min="-100" max="100" value="0" oninput="updateValue('texture')">
                 </div>
 
+                <!-- GEOMETRY & FRAMING: mirror, rotate, straighten, scale -->
                 <div class="control-section">
                     <h5>{% trans "Geometry & framing" %}</h5>
                     <div class="form-check">
@@ -594,16 +789,22 @@
                     </div>
                     <label class="form-label range-label mt-3" for="rotate">{% trans "Rotate" %} <span class="range-value" id="rotateValue" data-target="rotate" data-min="-180" data-max="180">0</span></label>
                     <input id="rotate" type="range" class="form-range" min="-180" max="180" value="0" oninput="updateValue('rotate')">
+                    
+                    <!-- Straighten has small range for fine adjustments -->
                     <label class="form-label range-label mt-3" for="straighten">{% trans "Straighten" %} <span class="range-value" id="straightenValue" data-target="straighten" data-min="-10" data-max="10">0</span></label>
                     <input id="straighten" type="range" class="form-range" min="-10" max="10" value="0" oninput="updateValue('straighten')">
+                    
+                    <!-- Scale uses number input instead of range for precise control -->
                     <label class="form-label range-label mt-3" for="scale">{% trans "Resize / Scale (%)" %} <span class="range-value" id="scaleValue" data-target="scale" data-min="10" data-max="200">100</span></label>
                     <input id="scale" type="number" class="form-control" min="10" max="200" value="100" oninput="updateValue('scale')">
                 </div>
 
+                <!-- EFFECTS: blur, vignette -->
                 <div class="control-section">
                     <h5>{% trans "Effects" %}</h5>
                     <label class="form-label range-label" for="blur">{% trans "Blur" %} <span class="range-value" id="blurValue" data-target="blur" data-min="0" data-max="50">0</span></label>
                     <input id="blur" type="range" class="form-range" min="0" max="50" value="0" oninput="updateValue('blur')">
+                    
                     <label class="form-label range-label mt-3" for="vignette">{% trans "Vignette" %} <span class="range-value" id="vignetteValue" data-target="vignette" data-min="-100" data-max="100">0</span></label>
                     <input id="vignette" type="range" class="form-range" min="-100" max="100" value="0" oninput="updateValue('vignette')">
                 </div>
@@ -611,7 +812,11 @@
         </div>
     </div>
 
-    <!-- Filter Modal -->
+    <!-- 
+        FILTER MODAL
+        Quick preset filters that set multiple sliders at once
+        Includes: Bright, Warm, Cool, Vivid, Muted, Sepia, B&W
+    -->
     <div id="filterModalOverlay" class="filter-modal-overlay" onclick="closeFilters();"></div>
     <div id="filterModal" class="filter-modal">
         <h4>{% trans "Quick Filters" %}</h4>
@@ -625,7 +830,11 @@
         <button type="button" class="btn btn-secondary filter-btn" onclick="closeFilters();">{% trans "Close" %}</button>
     </div>
 
-    <!-- Save As Modal -->
+    <!-- 
+        SAVE AS MODAL
+        Allows saving edited photo as a new file
+        Prompts for new filename
+    -->
     <div id="saveAsModalOverlay" class="saveas-modal-overlay" onclick="cancelSaveAs();"></div>
     <div id="saveAsModal" class="saveas-modal">
         <h4>{% trans "Save as new image" %}</h4>
@@ -637,11 +846,16 @@
         </div>
     </div>
 
-    <!-- Font Awesome для іконок -->
+    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
-        // ========== ПЕРЕМИКАЧ ТЕМИ ==========
+        // ========== THEME TOGGLE ==========
+        /*
+         * Theme management using localStorage for persistence
+         * IIFE to avoid polluting global scope
+         * Updates icon based on current theme state
+         */
         (function() {
             const themeToggle = document.getElementById('themeToggle');
             const html = document.documentElement;
@@ -671,7 +885,12 @@
             }
         })();
         
-        // === CROP SYSTEM ===
+        // ========== CROP SYSTEM ==========
+        /*
+         * Interactive crop functionality
+         * Supports dragging to reposition and handle-based resizing
+         * Coordinates stored as percentages relative to image dimensions
+         */
         let isDragging = false;
         let isResizing = false;
         let currentHandle = null;
@@ -685,6 +904,11 @@
         const previewContainer = document.getElementById('previewContainer');
         const previewImg = document.getElementById('photoPreview');
         
+        /*
+         * Initialize crop mode
+         * Shows crop box at 50% of image size centered
+         * Restores previous crop if appliedCrop exists
+         */
         function initCrop() {
             cropActive = true;
             cropOverlay.classList.add('active');
@@ -693,11 +917,13 @@
             const imgRect = previewImg.getBoundingClientRect();
             
             if (appliedCrop) {
+                // Restore previous crop dimensions
                 cropBox.style.left = appliedCrop.left + 'px';
                 cropBox.style.top = appliedCrop.top + 'px';
                 cropBox.style.width = appliedCrop.width + 'px';
                 cropBox.style.height = appliedCrop.height + 'px';
             } else {
+                // Default: 50% of smaller dimension, centered
                 const size = Math.min(imgRect.width, imgRect.height) * 0.5;
                 const left = (imgRect.width - size) / 2;
                 const top = (imgRect.height - size) / 2;
@@ -709,10 +935,16 @@
             }
         }
         
+        /*
+         * Apply crop - calculates percentage coordinates
+         * Clamps values to 0-100 range
+         * Stores applied crop for restoration
+         */
         function applyCrop() {
             const imgRect = previewImg.getBoundingClientRect();
             const boxRect = cropBox.getBoundingClientRect();
             
+            // Convert pixel coordinates to percentages
             const cropX = ((boxRect.left - imgRect.left) / imgRect.width) * 100;
             const cropY = ((boxRect.top - imgRect.top) / imgRect.height) * 100;
             const cropW = (boxRect.width / imgRect.width) * 100;
@@ -747,8 +979,14 @@
             currentHandle = null;
         }
         
+        /*
+         * Mouse event handlers for crop interaction
+         * Handles both dragging (reposition) and resizing via handles
+         * Constrains crop box within image boundaries
+         */
         cropBox.addEventListener('mousedown', function(e) {
             if (e.target.classList.contains('crop-handle')) {
+                // Handle-based resizing
                 isResizing = true;
                 currentHandle = e.target.dataset.handle;
                 startX = e.clientX;
@@ -760,6 +998,7 @@
                 e.preventDefault();
                 e.stopPropagation();
             } else {
+                // Box dragging
                 isDragging = true;
                 startX = e.clientX;
                 startY = e.clientY;
@@ -769,6 +1008,11 @@
             }
         });
         
+        /*
+         * Global mousemove handler for crop operations
+         * Updates crop box position/size based on mouse movement
+         * Constrains within image boundaries
+         */
         document.addEventListener('mousemove', function(e) {
             if (!cropActive) return;
             
@@ -780,6 +1024,7 @@
                 let newLeft = startLeft + dx;
                 let newTop = startTop + dy;
                 
+                // Constrain within image bounds
                 const maxLeft = imgRect.width - parseFloat(cropBox.style.width);
                 const maxTop = imgRect.height - parseFloat(cropBox.style.height);
                 
@@ -798,6 +1043,8 @@
                 let newWidth = startWidth;
                 let newHeight = startHeight;
                 
+                // Handle-based size adjustments
+                // e/w handles affect width, n/s handles affect height
                 if (currentHandle.includes('e')) {
                     newWidth = Math.max(20, startWidth + dx);
                 }
@@ -821,6 +1068,7 @@
                     }
                 }
                 
+                // Constrain within image bounds
                 const maxWidth = imgRect.width - newLeft;
                 const maxHeight = imgRect.height - newTop;
                 newWidth = Math.min(newWidth, maxWidth);
@@ -839,6 +1087,7 @@
             currentHandle = null;
         });
         
+        // Toggle crop mode on button click
         document.getElementById('cropBtn').addEventListener('click', function() {
             if (cropActive) {
                 deactivateCrop();
@@ -851,6 +1100,12 @@
         const saveAsField = document.getElementById('saveAsField');
         const editPanel = document.getElementById('editPanel');
 
+        /*
+         * RANGE VALUE CLICK-TO-EDIT
+         * Allows users to click on the displayed value and enter a number directly
+         * Creates a temporary input element that replaces the text
+         * Validates input against min/max constraints
+         */
         document.querySelectorAll('.range-value').forEach(span => {
             span.addEventListener('click', function(e) {
                 if (this.classList.contains('editing')) return;
@@ -859,6 +1114,7 @@
                 const max = parseFloat(this.dataset.max);
                 const currentValue = document.getElementById(targetId).value;
                 
+                // Switch to editing mode
                 this.classList.add('editing');
                 const input = document.createElement('input');
                 input.type = 'number';
@@ -871,6 +1127,7 @@
                 input.focus();
                 input.select();
                 
+                // Save input value on blur or Enter
                 const saveInput = () => {
                     let newValue = parseFloat(input.value);
                     if (isNaN(newValue)) newValue = 0;
@@ -892,10 +1149,12 @@
             });
         });
 
+        // Toggle adjustment panel visibility
         function togglePanel() {
             editPanel.classList.toggle('open');
         }
 
+        // Navigate back with confirmation if unsaved changes
         function goBackToGallery() {
             if (!confirm("{% trans 'Unsaved changes will be lost. Are you sure you want to go back?' %}")) {
                 return;
@@ -903,6 +1162,7 @@
             window.location.href = '{% url "gallery" %}';
         }
 
+        // Open save-as modal
         function saveAs() {
             document.getElementById('saveAsModal').classList.add('show');
             document.getElementById('saveAsModalOverlay').classList.add('show');
@@ -911,6 +1171,7 @@
             saveAsField.value = '1';
         }
 
+        // Confirm save-as with filename validation
         function confirmSaveAs() {
             const filename = document.getElementById('newFilename').value.trim();
             if (!filename) {
@@ -918,6 +1179,7 @@
                 document.getElementById('newFilename').focus();
                 return;
             }
+            // Use filename (without extension) as description
             const base = filename.replace(/\.[^/.]+$/, '');
             const descField = document.querySelector('#id_description');
             if (descField) descField.value = base;
@@ -927,6 +1189,7 @@
             submitSave();
         }
 
+        // Cancel save-as operation
         function cancelSaveAs() {
             document.getElementById('saveAsModal').classList.remove('show');
             document.getElementById('saveAsModalOverlay').classList.remove('show');
@@ -936,6 +1199,11 @@
             document.getElementById('saveBtn').className = 'btn btn-primary';
         }
 
+        /*
+         * Submit save - collects all adjustment values
+         * Syncs visible sliders to hidden form fields
+         * Handles save-as filename logic
+         */
         function submitSave() {
             if (saveAsField.value === '1') {
                 const filename = document.getElementById('newFilename').value.trim();
@@ -956,6 +1224,7 @@
                 if (descField && !descField.value) descField.value = base;
             }
             
+            // Sync all slider values to hidden fields before submit
             const fields = [
                 'brightness', 'contrast', 'saturation', 'exposure', 'blur', 'hue',
                 'vibrance', 'temperature', 'tint', 'sharpness', 'rotate', 'scale',
@@ -971,6 +1240,10 @@
             editForm.submit();
         }
 
+        /*
+         * Update slider value display and trigger preview refresh
+         * Called on slider input events
+         */
         function updateValue(id) {
             const element = document.getElementById(id);
             const value = element ? element.value : '0';
@@ -984,6 +1257,7 @@
             saveToHistory();
         }
 
+        // Toggle mirror checkbox
         function toggleMirror() {
             const mirror = document.getElementById('mirror');
             mirror.checked = !mirror.checked;
@@ -991,6 +1265,7 @@
             saveToHistory();
         }
 
+        // Show/hide filter modal
         function showFilters() {
             document.getElementById('filterModal').classList.add('show');
             document.getElementById('filterModalOverlay').classList.add('show');
@@ -1001,9 +1276,15 @@
             document.getElementById('filterModalOverlay').classList.remove('show');
         }
 
+        /*
+         * Apply preset filter
+         * Resets all sliders to defaults, then applies filter-specific values
+         * Preserves mirror state across filter changes
+         */
         function applyFilter(filterName) {
             const currentMirror = document.getElementById('mirror').checked;
             
+            // Reset all sliders to zero
             const slidersToReset = {
                 'brightness': 0, 'contrast': 0, 'saturation': 0, 'exposure': 0,
                 'vibrance': 0, 'temperature': 0, 'tint': 0, 'hue': 0,
@@ -1018,6 +1299,7 @@
             document.getElementById('scale').value = 100;
             document.getElementById('mirror').checked = currentMirror;
             
+            // Apply filter-specific values
             switch(filterName) {
                 case 'bright':
                     document.getElementById('brightness').value = 30;
@@ -1055,6 +1337,12 @@
 
         let previewTimer = null;
 
+        /*
+         * Real-time preview update
+         * Uses debouncing (150ms delay) to avoid excessive server requests
+         * Sends all adjustment parameters as query string
+         * Appends timestamp to prevent browser caching
+         */
         function updatePreview() {
             if (previewTimer) clearTimeout(previewTimer);
             previewTimer = setTimeout(() => {
@@ -1077,6 +1365,7 @@
                 params.append('crop_h', document.getElementById('cropH').value);
                 
                 const url = '/edit/{{ photo.id }}/preview/?' + params.toString();
+                // Cache-busting timestamp
                 const timestamp = new Date().getTime();
                 const urlWithTimestamp = url + '&_t=' + timestamp;
                 
@@ -1084,6 +1373,12 @@
             }, 150);
         }
 
+        /*
+         * EDIT HISTORY SYSTEM
+         * Tracks all adjustment states for undo functionality
+         * Stores snapshots of all slider values
+         * Supports going back to initial state (reset)
+         */
         let editHistory = [{
             brightness: 0, contrast: 0, saturation: 0, exposure: 0, vibrance: 0,
             temperature: 0, tint: 0, hue: 0, sharpness: 0, blur: 0,
@@ -1092,6 +1387,7 @@
         }];
         let historyIndex = 0;
 
+        // Save current state to history
         function saveToHistory() {
             editHistory = editHistory.slice(0, historyIndex + 1);
             editHistory.push({
@@ -1119,6 +1415,7 @@
             historyIndex = editHistory.length - 1;
         }
 
+        // Restore state from history
         function loadFromHistory(index) {
             const state = editHistory[index];
             const ids = [
@@ -1134,6 +1431,7 @@
             updateAllValues();
         }
 
+        // Update all display values and preview
         function updateAllValues() {
             const fields = [
                 'brightness', 'contrast', 'saturation', 'exposure', 'vibrance', 'temperature',
@@ -1150,6 +1448,11 @@
             updatePreview();
         }
 
+        /*
+         * Reset all changes to original state
+         * Restores from history index 0 (initial state)
+         * Resets crop, mirror, and preview image
+         */
         function resetChanges() {
             if (editHistory.length > 0) {
                 loadFromHistory(0);

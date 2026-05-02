@@ -1,3 +1,10 @@
+<!--
+    Login Page - Desktop Version
+    Authentication page with username/password form, password visibility toggle,
+    theme switching, and language selection.
+    Uses inline SVG icons for the eye toggle to avoid external dependencies.
+    Includes link to signup page for new users.
+-->
 <!DOCTYPE html>
 <html data-bs-theme="light">
 <head>
@@ -6,23 +13,40 @@
     {% load i18n %}
     <title>{% trans "Log in" %}</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
+    
+    <!-- Bootstrap 5.3.8 CSS with integrity hash for security -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" 
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <!-- Font Awesome 6.4.0 for icons (theme toggle, etc.) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        
+        /* Base body with smooth theme transition */
         body {
             background: #f8f9fa;
             transition: background 0.3s ease, color 0.3s ease;
         }
         
+        /* Form inputs take full width of container */
         .login-form input[type="text"],
         .login-form input[type="password"] {
             width: 100%;
         }
+        
+        /*
+         * Password wrapper for positioning the toggle button
+         * Relative positioning allows absolute positioning of toggle button
+         */
         .password-wrapper {
             position: relative;
         }
+        
+        /*
+         * Password visibility toggle button
+         * Positioned inside the password input field on the right side
+         * z-index: 5 ensures it's above the input
+         * tabindex="-1" removes from tab order (not needed for form submission)
+         */
         .toggle-password {
             position: absolute;
             right: 10px;
@@ -35,21 +59,26 @@
             color: #6c757d;
             z-index: 5;
         }
+        
         .toggle-password:hover {
             color: #495057;
         }
         
+        /* ========== DARK THEME OVERRIDES ========== */
         
+        /* Pure black background */
         [data-bs-theme="dark"] body {
             background: #000000;
             color: #ffffff;
         }
         
+        /* Card with subtle transparency */
         [data-bs-theme="dark"] .card {
             background-color: rgba(255, 255, 255, 0.05);
             border-color: rgba(255, 255, 255, 0.1);
         }
         
+        /* Card header with slightly lighter background */
         [data-bs-theme="dark"] .card-header {
             background-color: rgba(255, 255, 255, 0.08);
             border-bottom-color: rgba(255, 255, 255, 0.1);
@@ -59,16 +88,19 @@
             color: #ffffff;
         }
         
+        /* Form labels with reduced opacity for hierarchy */
         [data-bs-theme="dark"] .form-label {
             color: rgba(255, 255, 255, 0.8);
         }
         
+        /* Form inputs with semi-transparent background */
         [data-bs-theme="dark"] .form-control {
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.2);
             color: #ffffff;
         }
         
+        /* Focus state with Bootstrap blue glow */
         [data-bs-theme="dark"] .form-control:focus {
             background: rgba(255, 255, 255, 0.15);
             border-color: #0d6efd;
@@ -76,10 +108,12 @@
             box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
         }
         
+        /* Placeholder text */
         [data-bs-theme="dark"] .form-control::placeholder {
             color: rgba(255, 255, 255, 0.5);
         }
         
+        /* Password toggle button in dark mode */
         [data-bs-theme="dark"] .toggle-password {
             color: rgba(255, 255, 255, 0.5);
         }
@@ -88,6 +122,7 @@
             color: rgba(255, 255, 255, 0.8);
         }
         
+        /* Links with accessible blue in dark mode */
         [data-bs-theme="dark"] a {
             color: #6ea8fe;
         }
@@ -96,17 +131,22 @@
             color: #8bb9fe;
         }
         
+        /* Horizontal rule with reduced opacity */
         [data-bs-theme="dark"] hr {
             border-color: rgba(255, 255, 255, 0.2);
         }
         
+        /* Alert danger with softer red and transparent background */
         [data-bs-theme="dark"] .alert-danger {
             background: rgba(220, 53, 69, 0.15);
             border-color: rgba(220, 53, 69, 0.3);
             color: #ff6b6b;
         }
         
-        
+        /* 
+         * Theme toggle button - minimal design
+         * Clean appearance without background or border
+         */
         .theme-toggle-btn {
             background: none;
             border: none;
@@ -127,6 +167,7 @@
             color: #ffffff;
         }
         
+        /* Form select (language dropdown) in dark mode */
         [data-bs-theme="dark"] .form-select {
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.2);
@@ -139,6 +180,10 @@
             color: #ffffff;
         }
         
+        /* 
+         * Dropdown options in dark mode
+         * Dark background prevents white flash on open
+         */
         [data-bs-theme="dark"] select option {
             background: #1a1a2e;
             color: #ffffff;
@@ -147,10 +192,21 @@
 </head>
 <body class="m-5">
     <div class="container">
+        <!-- 
+            Top-right control bar
+            Contains theme toggle and language switcher
+        -->
         <div class="d-flex justify-content-end mb-3 align-items-center gap-3">
+            <!-- Theme toggle button -->
             <button class="theme-toggle-btn" id="themeToggle" title="{% trans 'Toggle theme' %}">
                 <i class="fas fa-moon"></i>
             </button>
+            
+            <!-- 
+                Language selection form
+                Auto-submits on change via onchange event
+                CSRF token included for security
+            -->
             <form action="{% url 'set_language' %}" method="post" id="lang-form" class="d-inline">
                 {% csrf_token %}
                 <input name="next" type="hidden" value="{{ redirect_to }}" />
@@ -166,6 +222,8 @@
                 </select>
             </form>
         </div>
+        
+        <!-- Centered login form (6/12 columns on medium screens) -->
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card">
@@ -173,20 +231,47 @@
                         <h3>{% trans "Log in" %}</h3>
                     </div>
                     <div class="card-body">
+                        <!-- 
+                            Login form with CSRF protection
+                            Uses class "login-form" for styling
+                            POST method for secure credential submission
+                        -->
                         <form method="POST" class="login-form">
                             {% csrf_token %}
                             
+                            <!-- 
+                                Username field
+                                id="id_username" matches Django's default field ID
+                                required attribute for HTML5 validation
+                            -->
                             <div class="mb-3">
                                 <label for="id_username" class="form-label">{% trans "Username" %}</label>
                                 <input type="text" name="username" id="id_username" class="form-control" required>
                             </div>
                             
+                            <!-- 
+                                Password field with visibility toggle
+                                Wrapped in password-wrapper for toggle button positioning
+                                toggle button uses tabindex="-1" to exclude from tab navigation
+                            -->
                             <div class="mb-3">
                                 <label for="id_password" class="form-label">{% trans "Password" %}</label>
                                 <div class="password-wrapper">
                                     <input type="password" name="password" id="id_password" class="form-control" required>
+                                    
+                                    <!-- 
+                                        Password visibility toggle button
+                                        Uses inline SVG for the eye icon
+                                        Two states: eye-open (password hidden) and eye-off (password visible)
+                                        onclick calls togglePassword() to switch between states
+                                    -->
                                     <button type="button" class="toggle-password" onclick="togglePassword()" tabindex="-1">
                                         <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                            <!-- 
+                                                Eye icon (open eye) - shown when password is hidden
+                                                First path: eye outline
+                                                Second path: pupil circle
+                                            -->
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         </svg>
@@ -194,11 +279,18 @@
                                 </div>
                             </div>
                             
+                            <!-- 
+                                Submit button centered
+                                width: 50% for narrower button
+                            -->
                             <div class="text-center">
                                 <button type="submit" class="btn btn-primary" style="width: 50%;">{% trans "Login" %}</button>
                             </div>
                         </form>
+                        
                         <hr>
+                        
+                        <!-- Signup link for new users -->
                         <p>{% trans "Don't have an account?" %} <a href="{% url 'signup' %}">{% trans "Sign up here" %}</a></p>
                     </div>
                 </div>
@@ -207,15 +299,22 @@
     </div>
     
     <script>
-        
+        /*
+         * THEME MANAGEMENT
+         * IIFE for scope isolation
+         * Uses localStorage for persistence
+         * Updates toggle icon based on current theme
+         */
         (function() {
             const themeToggle = document.getElementById('themeToggle');
             const html = document.documentElement;
             
+            // Load saved theme or default to light
             const savedTheme = localStorage.getItem('theme') || 'light';
             html.setAttribute('data-bs-theme', savedTheme);
             updateThemeIcon(savedTheme);
             
+            // Toggle theme on button click
             themeToggle.addEventListener('click', function() {
                 const currentTheme = html.getAttribute('data-bs-theme');
                 const newTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -225,6 +324,11 @@
                 updateThemeIcon(newTheme);
             });
             
+            /*
+             * Update theme toggle button icon
+             * Sun icon for dark mode (switch to light action)
+             * Moon icon for light mode (switch to dark action)
+             */
             function updateThemeIcon(theme) {
                 const icon = themeToggle.querySelector('i');
                 if (theme === 'dark') {
@@ -237,18 +341,30 @@
             }
         })();
         
-        
+        /*
+         * PASSWORD VISIBILITY TOGGLE
+         * Switches password input type between 'password' and 'text'
+         * Updates SVG icon to show open/closed eye
+         * 
+         * SVG Icons:
+         * - Eye open: standard eye with pupil (password hidden)
+         * - Eye off: eye with line through it (password visible)
+         */
         function togglePassword() {
             const passwordInput = document.getElementById('id_password');
             const eyeIcon = document.getElementById('eye-icon');
             
             if (passwordInput.type === 'password') {
+                // Show password - switch to text type
                 passwordInput.type = 'text';
+                // Replace with "eye-off" icon (line through eye)
                 eyeIcon.innerHTML = `
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"/>
                 `;
             } else {
+                // Hide password - switch back to password type
                 passwordInput.type = 'password';
+                // Replace with standard eye icon
                 eyeIcon.innerHTML = `
                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>

@@ -1,3 +1,10 @@
+<!--
+    Photo Editor Page - Mobile Optimized Version
+    Touch-friendly image editor with gesture-based crop, parameter chips,
+    quick filters, and bottom sheet UI pattern.
+    Uses CSS custom properties for instant theme switching.
+    Designed for mobile browsers with safe area support.
+-->
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
@@ -6,11 +13,23 @@
     <meta charset='utf-8'>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>{% trans "Edit Photo - Mobile" %}</title>
+    
+    <!-- 
+        Mobile-optimized viewport
+        viewport-fit=cover allows content behind notch
+        maximum-scale=1.0 prevents unwanted zoom on interactions
+    -->
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover'>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /*
+         * CSS CUSTOM PROPERTIES FOR THEMING
+         * Light theme (default) variables
+         * Warm white (#fffff0) for reduced eye strain on mobile
+         */
         :root {
             --bg-primary: #fffff0;
             --bg-secondary: #ffffff;
@@ -27,6 +46,7 @@
         }
 
         [data-bs-theme="dark"] {
+            /* Dark theme variables - pure black for OLED efficiency */
             --bg-primary: #000000;
             --bg-secondary: #1c1c1e;
             --bg-tertiary: #2c2c2e;
@@ -41,28 +61,40 @@
             --overlay-bg: rgba(0, 0, 0, 0.7);
         }
 
+        /* Reset and base styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
+            -webkit-user-select: none;  /* Prevent text selection during touch interactions */
             user-select: none;
         }
 
+        /* 
+            Body fills entire viewport
+            height: 100dvh uses dynamic viewport height for mobile browsers
+            overflow: hidden prevents scrolling
+            touch-action: manipulation improves touch response
+        */
         body {
             background: var(--bg-primary);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden;
             height: 100vh;
-            height: 100dvh;
+            height: 100dvh;  /* Dynamic viewport height - handles mobile browser chrome */
             width: 100vw;
             color: var(--text-primary);
-            touch-action: manipulation;
+            touch-action: manipulation;  /* Optimizes touch events, reduces 300ms delay */
             transition: background 0.3s ease, color 0.3s ease;
         }
 
         /* ============ TOP BAR ============ */
+        /*
+         * Fixed top navigation bar
+         * Contains close button, save button, and more menu
+         * Safe area padding for notched devices
+         */
         .top-bar {
             position: fixed;
             top: 0;
@@ -78,6 +110,7 @@
             border-bottom: 0.5px solid var(--border-subtle);
         }
 
+        /* Top button base style - minimal design for mobile */
         .top-btn {
             background: none;
             border: none;
@@ -105,6 +138,7 @@
             gap: 4px;
         }
 
+        /* Save button with accent color */
         .top-btn.save-text {
             font-size: 16px;
             font-weight: 600;
@@ -117,6 +151,11 @@
             padding: 10px 12px;
         }
 
+        /*
+         * More menu dropdown
+         * Positioned below the more button
+         * Contains additional actions like Save As
+         */
         .more-menu {
             position: absolute;
             top: calc(100% + 4px);
@@ -135,6 +174,7 @@
             display: block;
         }
 
+        /* Menu items with icon + text layout */
         .more-menu-item {
             display: flex;
             align-items: center;
@@ -158,6 +198,11 @@
         }
 
         /* ============ PHOTO AREA ============ */
+        /*
+         * Central photo display area
+         * Fixed positioning between top bar and bottom panel
+         * Centers image using flexbox
+         */
         .photo-area {
             position: fixed;
             top: 50px;
@@ -171,6 +216,10 @@
             background: var(--bg-primary);
         }
 
+        /* 
+            Preview image constraints
+            pointer-events: none allows touch events to pass to crop overlay
+        */
         .preview-image {
             max-width: 90vw;
             max-height: calc(100dvh - 250px);
@@ -180,7 +229,12 @@
             pointer-events: none;
         }
 
-        /* ============ SLIDER + BOTTOM PANEL ============ */
+        /* ============ BOTTOM PANEL (SLIDER + CHIPS) ============ */
+        /*
+         * Bottom sheet panel
+         * Contains slider, parameter chips, and tab navigation
+         * Safe area padding for home indicator
+         */
         .bottom-panel {
             position: fixed;
             bottom: 0;
@@ -193,6 +247,7 @@
             border-top: 0.5px solid var(--border-subtle);
         }
 
+        /* Slider row with input and value display */
         .slider-row {
             display: flex;
             align-items: center;
@@ -201,6 +256,11 @@
             margin-bottom: 2px;
         }
 
+        /*
+         * Mini slider - styled range input
+         * Thin track (3px) for subtle appearance
+         * Large thumb for easy touch interaction
+         */
         .mini-slider {
             -webkit-appearance: none;
             appearance: none;
@@ -230,19 +290,24 @@
             text-align: right;
         }
 
-        /* Великі кнопки параметрів */
+        /*
+         * HORIZONTAL SCROLLING CHIPS
+         * Scrollable container for parameter selection
+         * Hides scrollbar for clean appearance
+         * -webkit-overflow-scrolling: touch for smooth iOS scrolling
+         */
         .params-scroll {
             overflow-x: auto;
             white-space: nowrap;
             -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+            scrollbar-width: none;        /* Firefox */
+            -ms-overflow-style: none;      /* IE/Edge */
             padding: 4px 0;
             margin-bottom: 2px;
         }
 
         .params-scroll::-webkit-scrollbar {
-            display: none;
+            display: none;  /* Chrome/Safari */
         }
 
         .params-row {
@@ -250,6 +315,11 @@
             gap: 6px;
         }
 
+        /*
+         * Parameter chip - pill-shaped button
+         * Selected state uses accent color with white text
+         * flex-shrink: 0 prevents compression in scroll container
+         */
         .param-chip {
             background: var(--chip-bg);
             border: none;
@@ -268,13 +338,14 @@
             background: var(--tab-active-bg);
         }
 
+        /* Selected chip gets accent background */
         .param-chip.selected {
             background: var(--accent);
             color: #ffffff;
             font-weight: 600;
         }
 
-        /* Crop chips */
+        /* Crop chips container */
         .crop-chips {
             display: flex;
             gap: 6px;
@@ -283,6 +354,7 @@
             margin-bottom: 2px;
         }
 
+        /* Crop mode selection chip */
         .crop-chip {
             background: var(--chip-bg);
             border: none;
@@ -305,6 +377,7 @@
             color: #ffffff;
         }
 
+        /* Crop action buttons row */
         .crop-actions {
             display: flex;
             gap: 8px;
@@ -326,6 +399,7 @@
             text-align: center;
         }
 
+        /* Apply button with accent background */
         .crop-action-btn.apply {
             background: var(--accent);
             border-color: var(--accent);
@@ -336,7 +410,7 @@
             opacity: 0.7;
         }
 
-        /* Quick filters */
+        /* Quick filter chips */
         .quick-filters {
             display: flex;
             gap: 6px;
@@ -362,7 +436,7 @@
             background: var(--tab-active-bg);
         }
 
-        /* Маленькі вкладки */
+        /* Tab navigation row */
         .tab-row {
             display: flex;
             justify-content: center;
@@ -371,6 +445,7 @@
             border-top: 0.5px solid var(--border-subtle);
         }
 
+        /* Small tab buttons */
         .tab-btn-small {
             background: none;
             border: none;
@@ -395,6 +470,11 @@
         }
 
         /* ============ CROP OVERLAY ============ */
+        /*
+         * Full-screen crop overlay
+         * touch-action: none prevents browser gestures during crop
+         * Hidden by default, shown with .active class
+         */
         .crop-overlay {
             position: fixed;
             top: 0;
@@ -411,6 +491,11 @@
             display: block;
         }
 
+        /*
+         * Crop selection box
+         * box-shadow creates darkened area outside crop
+         * Uses 9999px spread to cover entire viewport
+         */
         .crop-box {
             position: absolute;
             border: 2px solid var(--text-primary);
@@ -420,6 +505,10 @@
             box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
         }
 
+        /*
+         * Crop handles - larger for touch targets (22px)
+         * Positioned at four corners only for mobile simplicity
+         */
         .crop-handle {
             position: absolute;
             width: 22px;
@@ -435,6 +524,7 @@
         .crop-handle-sw { bottom: -11px; left: -11px; cursor: sw-resize; }
         .crop-handle-se { bottom: -11px; right: -11px; cursor: se-resize; }
 
+        /* Crop grid lines for rule-of-thirds guide */
         .crop-grid {
             position: absolute;
             top: 0;
@@ -463,6 +553,10 @@
         }
 
         /* ============ SAVE AS MODAL ============ */
+        /*
+         * Modal overlay for save-as functionality
+         * Flex display for centering dialog
+         */
         .save-as-overlay {
             position: fixed;
             top: 0;
@@ -481,6 +575,7 @@
             display: flex;
         }
 
+        /* Save-as dialog card */
         .save-as-dialog {
             background: var(--bg-secondary);
             border-radius: 16px;
@@ -512,6 +607,7 @@
             border-color: var(--accent);
         }
 
+        /* Button row with equal-width buttons */
         .save-as-buttons {
             display: flex;
             gap: 8px;
@@ -539,6 +635,10 @@
         }
 
         /* ============ DETAILS MODAL ============ */
+        /*
+         * Photo details editing modal
+         * Contains description, category, and metadata fields
+         */
         .details-overlay {
             position: fixed;
             top: 0;
@@ -572,6 +672,7 @@
             text-align: center;
         }
 
+        /* Form fields inside details modal */
         .details-field {
             margin-bottom: 12px;
         }
@@ -604,6 +705,11 @@
             min-height: 60px;
         }
 
+        /*
+         * Custom select dropdown arrow
+         * Uses inline SVG for theme-compatible arrow
+         * Removes default browser appearance
+         */
         .details-field select {
             appearance: none;
             -webkit-appearance: none;
@@ -613,6 +719,7 @@
             padding-right: 32px;
         }
         
+        /* Dark theme dropdown arrow */
         [data-bs-theme="dark"] .details-field select {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='white'/%3E%3C/svg%3E");
         }
@@ -628,6 +735,7 @@
             border-color: var(--accent);
         }
 
+        /* Info row for displaying file metadata */
         .details-info-row {
             display: flex;
             justify-content: space-between;
@@ -650,18 +758,27 @@
 <body>
 
     <!-- ==================== TOP BAR ==================== -->
+    <!-- 
+        Fixed header with navigation and actions
+        Close button (X) on left, Save + More on right
+    -->
     <div class="top-bar" id="topBar">
+        <!-- Close/back button - uses X icon for clear dismiss action -->
         <button class="top-btn cancel-btn" onclick="goBack()">
             <i class="fas fa-times"></i>
         </button>
         
         <div class="top-right-group">
+            <!-- Primary save action with accent color -->
             <button class="top-btn save-text" onclick="submitSave()">{% trans "Save" %}</button>
+            
+            <!-- More options menu trigger -->
             <button class="top-btn more-btn" onclick="toggleMoreMenu()">
                 <i class="fas fa-ellipsis-h"></i>
             </button>
         </div>
         
+        <!-- Dropdown menu for additional actions -->
         <div class="more-menu" id="moreMenu">
             <div class="more-menu-item" onclick="openSaveAs()">
                 <i class="fas fa-copy"></i>
@@ -671,15 +788,24 @@
     </div>
 
     <!-- ==================== PHOTO AREA ==================== -->
+    <!-- 
+        Main photo display with hidden form
+        Form contains all hidden inputs for server-side processing
+        Positioned inside photo area for proper event handling
+    -->
     <div class="photo-area" id="photoArea">
         <form id="editForm" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="hidden" name="save_as" id="saveAsField" value="">
             <input type="hidden" name="new_filename" id="newFilenameField" value="">
+            
+            <!-- Crop coordinates as percentages -->
             <input type="hidden" name="crop_x" id="cropX" value="0">
             <input type="hidden" name="crop_y" id="cropY" value="0">
             <input type="hidden" name="crop_w" id="cropW" value="100">
             <input type="hidden" name="crop_h" id="cropH" value="100">
+            
+            <!-- All adjustment parameters stored as hidden fields -->
             <input type="hidden" name="brightness" id="hiddenBrightness" value="0">
             <input type="hidden" name="contrast" id="hiddenContrast" value="0">
             <input type="hidden" name="saturation" id="hiddenSaturation" value="0">
@@ -694,11 +820,17 @@
             <input type="hidden" name="scale" id="hiddenScale" value="100">
             <input type="hidden" name="vignette" id="hiddenVignette" value="0">
             <input type="hidden" name="mirror" id="hiddenMirror" value="">
+            
+            <!-- Metadata fields for description and category -->
             <input type="hidden" name="description" id="hiddenDescription" value="{{ photo.description|default:'' }}">
             <input type="hidden" name="category" id="hiddenCategory" value="{{ photo.category.id|default:'' }}">
             <input type="hidden" name="category_new" id="hiddenCategoryNew" value="">
         </form>
         
+        <!-- 
+            Photo preview image
+            pointer-events: none set via CSS allows crop overlay to receive touch events
+        -->
         <img src="{{ photo.image.url }}" 
              alt="Photo preview"
              class="preview-image"
@@ -706,14 +838,20 @@
     </div>
 
     <!-- ==================== CROP OVERLAY ==================== -->
+    <!-- 
+        Full-screen crop interface
+        Contains crop box with handles and grid overlay
+    -->
     <div class="crop-overlay" id="cropOverlay">
         <div class="crop-box" id="cropBox">
+            <!-- Rule-of-thirds grid lines -->
             <div class="crop-grid" id="cropGrid">
                 <div class="crop-grid-line h" style="top: 33.33%;"></div>
                 <div class="crop-grid-line h" style="top: 66.66%;"></div>
                 <div class="crop-grid-line v" style="left: 33.33%;"></div>
                 <div class="crop-grid-line v" style="left: 66.66%;"></div>
             </div>
+            <!-- Four corner handles for resize -->
             <div class="crop-handle crop-handle-nw" data-handle="nw"></div>
             <div class="crop-handle crop-handle-ne" data-handle="ne"></div>
             <div class="crop-handle crop-handle-sw" data-handle="sw"></div>
@@ -722,7 +860,13 @@
     </div>
 
     <!-- ==================== BOTTOM PANEL ==================== -->
+    <!-- 
+        Bottom sheet with slider, chips, and tabs
+        Contains three tab panels: Adjustments, Crop, Filters
+        Plus Details tab that opens a modal
+    -->
     <div class="bottom-panel" id="bottomPanel">
+        <!-- Active slider for current adjustment parameter -->
         <div class="slider-row" id="sliderRow">
             <input type="range" class="mini-slider" id="activeSlider" 
                    min="-100" max="100" value="0" 
@@ -730,6 +874,7 @@
             <span class="slider-value-mini" id="sliderValueMini">0</span>
         </div>
 
+        <!-- ADJUSTMENTS TAB: Scrollable parameter chips -->
         <div class="params-scroll" id="adjustmentsContent">
             <div class="params-row">
                 <button class="param-chip selected" data-slider="brightness" data-min="-100" data-max="100" data-default="0">{% trans "Brightness" %}</button>
@@ -745,6 +890,7 @@
             </div>
         </div>
 
+        <!-- CROP TAB: Aspect ratio chips and crop actions -->
         <div class="crop-chips" id="cropContent" style="display: none;">
             <button class="crop-chip active" onclick="setCropMode('free')">{% trans "Free" %}</button>
             <button class="crop-chip" onclick="setCropMode('1:1')">1:1</button>
@@ -758,6 +904,7 @@
             </div>
         </div>
 
+        <!-- FILTERS TAB: Quick preset filters -->
         <div class="quick-filters" id="filtersContent" style="display: none;">
             <button class="quick-filter-chip" onclick="applyQuickFilter('bright')">{% trans "Bright" %}</button>
             <button class="quick-filter-chip" onclick="applyQuickFilter('warm')">{% trans "Warm" %}</button>
@@ -769,6 +916,7 @@
             <button class="quick-filter-chip" onclick="resetChanges()">{% trans "Original" %}</button>
         </div>
 
+        <!-- BOTTOM TABS: Navigation between adjustment categories -->
         <div class="tab-row">
             <button class="tab-btn-small active" onclick="switchTab('adjustments')">{% trans "Adjustments" %}</button>
             <button class="tab-btn-small" onclick="switchTab('crop')">{% trans "Crop" %}</button>
@@ -778,6 +926,7 @@
     </div>
 
     <!-- ==================== SAVE AS MODAL ==================== -->
+    <!-- Modal for saving edited photo as new copy -->
     <div class="save-as-overlay" id="saveAsOverlay">
         <div class="save-as-dialog">
             <h3>{% trans "Save as copy" %}</h3>
@@ -791,10 +940,12 @@
     </div>
 
     <!-- ==================== DETAILS MODAL ==================== -->
+    <!-- Modal for editing photo metadata (description, category) -->
     <div class="details-overlay" id="detailsOverlay">
         <div class="details-dialog">
             <h3>{% trans "Photo Details" %}</h3>
             
+            <!-- Description field -->
             <div class="details-field">
                 <label>{% trans "Description" %}</label>
                 <input type="text" id="detailsDescription" 
@@ -802,6 +953,7 @@
                        placeholder="{% trans 'Photo description...' %}">
             </div>
             
+            <!-- Category dropdown with user's categories -->
             <div class="details-field">
                 <label>{% trans "Category" %}</label>
                 <select id="detailsCategory">
@@ -814,11 +966,13 @@
                 </select>
             </div>
             
+            <!-- New category input (alternative to dropdown) -->
             <div class="details-field">
                 <label>{% trans "Or create new category" %}</label>
                 <input type="text" id="detailsNewCategory" placeholder="{% trans 'New category name...' %}">
             </div>
             
+            <!-- File metadata display -->
             <div class="details-info-row">
                 <span class="details-info-label">{% trans "Filename" %}</span>
                 <span class="details-info-value" style="font-size: 11px; word-break: break-all; max-width: 180px;">{{ photo.image.name|default:'unknown' }}</span>
@@ -829,6 +983,7 @@
                 <span class="details-info-value">{{ photo.created_at|date:"d.m.Y H:i" }}</span>
             </div>
             
+            <!-- Action buttons -->
             <div style="display: flex; gap: 8px; margin-top: 16px;">
                 <button class="save-as-cancel" onclick="closeDetails()" 
                         style="flex: 1; padding: 12px; border-radius: 10px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; background: var(--bg-tertiary); color: var(--text-primary);">
@@ -843,13 +998,23 @@
     </div>
 
     <script>
-        // ============ THEME INIT ============
+        // ============ THEME INITIALIZATION ============
+        /*
+         * Apply saved theme on DOM load
+         * Runs after CSS custom properties are defined
+         * Ensures correct theme on page load
+         */
         document.addEventListener('DOMContentLoaded', function() {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-bs-theme', savedTheme);
         });
 
-        // ============ STATE ============
+        // ============ APPLICATION STATE ============
+        /*
+         * Central state management
+         * Tracks active tab, selected parameter, mirror state, and crop state
+         * sliderValues object stores all adjustment values
+         */
         let activeTab = 'adjustments';
         let activeSliderParam = 'brightness';
         let mirrorActive = false;
@@ -861,22 +1026,30 @@
             sharpness: 0, blur: 0, rotate: 0, vignette: 0
         };
 
-        // ============ TOP BAR ============
+        // ============ TOP BAR FUNCTIONS ============
+        
+        /*
+         * Navigate back with unsaved changes warning
+         * Adds timestamp to URL to prevent caching issues
+         */
         function goBack() {
             if (confirm(`{% trans "Unsaved changes will be lost. Go back?" %}`)) {
                 window.location.href = '{% url "photo" photo.id %}?t=' + Date.now();
             }
         }
 
+        /* Toggle more menu dropdown */
         function toggleMoreMenu() {
             const menu = document.getElementById('moreMenu');
             menu.classList.toggle('show');
         }
 
+        /* Open save-as modal and focus input */
         function openSaveAs() {
             document.getElementById('moreMenu').classList.remove('show');
             document.getElementById('saveAsOverlay').classList.add('show');
             document.getElementById('saveAsInput').value = '';
+            // Delay focus for mobile keyboard to appear after modal animation
             setTimeout(() => document.getElementById('saveAsInput').focus(), 100);
         }
 
@@ -884,6 +1057,7 @@
             document.getElementById('saveAsOverlay').classList.remove('show');
         }
 
+        /* Confirm save-as with filename validation */
         function confirmSaveAs() {
             const filename = document.getElementById('saveAsInput').value.trim();
             if (!filename) {
@@ -896,6 +1070,11 @@
             submitSave();
         }
 
+        /*
+         * Submit save - syncs all state to hidden form fields
+         * Collects slider values, mirror state, crop coords
+         * Submits form for server-side processing
+         */
         function submitSave() {
             document.getElementById('hiddenBrightness').value = sliderValues.brightness;
             document.getElementById('hiddenContrast').value = sliderValues.contrast;
@@ -915,23 +1094,34 @@
         }
 
         // ============ TAB SWITCHING ============
+        /*
+         * Switch between bottom panel tabs
+         * Shows/hides appropriate content panels
+         * Deactivates crop when switching away from crop tab
+         * Opens details modal when switching to details tab
+         */
         function switchTab(tabName) {
             activeTab = tabName;
             
+            // Update active tab button
             document.querySelectorAll('.tab-btn-small').forEach(btn => btn.classList.remove('active'));
             event.target.closest('.tab-btn-small').classList.add('active');
             
+            // Show/hide content panels based on selected tab
             document.getElementById('adjustmentsContent').style.display = tabName === 'adjustments' ? 'block' : 'none';
             document.getElementById('cropContent').style.display = tabName === 'crop' ? 'flex' : 'none';
             document.getElementById('filtersContent').style.display = tabName === 'filters' ? 'flex' : 'none';
             
+            // Show slider only for adjustments tab
             const sliderRow = document.getElementById('sliderRow');
             sliderRow.style.display = tabName === 'adjustments' ? 'flex' : 'none';
             
+            // Auto-cancel crop when switching away
             if (tabName !== 'crop' && isCropping) {
                 cancelCrop();
             }
             
+            // Open details modal instead of panel content
             if (tabName === 'details') {
                 openDetails();
             }
@@ -942,6 +1132,10 @@
             document.getElementById('detailsOverlay').classList.add('show');
         }
 
+        /*
+         * Close details modal and reset to adjustments tab
+         * Restores default tab state
+         */
         function closeDetails() {
             document.getElementById('detailsOverlay').classList.remove('show');
             activeTab = 'adjustments';
@@ -953,6 +1147,7 @@
             document.getElementById('sliderRow').style.display = 'flex';
         }
 
+        /* Save details to hidden form fields */
         function saveDetails() {
             const description = document.getElementById('detailsDescription').value;
             const category = document.getElementById('detailsCategory').value;
@@ -964,6 +1159,7 @@
             
             document.getElementById('detailsOverlay').classList.remove('show');
             
+            // Reset to adjustments tab
             activeTab = 'adjustments';
             document.querySelectorAll('.tab-btn-small').forEach(btn => btn.classList.remove('active'));
             document.querySelector('.tab-btn-small[onclick*="adjustments"]').classList.add('active');
@@ -974,6 +1170,11 @@
         }
 
         // ============ PARAMETER CHIPS ============
+        /*
+         * Initialize parameter chip click handlers
+         * Selects default parameter (brightness) on load
+         * Initializes crop touch handlers
+         */
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.param-chip').forEach(chip => {
                 chip.addEventListener('click', function() {
@@ -984,17 +1185,25 @@
             initCropHandlers();
         });
 
+        /*
+         * Select a parameter chip and update slider
+         * Highlights selected chip, scrolls it into view
+         * Updates slider min/max/value based on selected parameter
+         */
         function selectParamChip(param) {
             activeSliderParam = param;
             
+            // Update chip selection
             document.querySelectorAll('.param-chip').forEach(chip => {
                 chip.classList.remove('selected');
                 if (chip.dataset.slider === param) {
                     chip.classList.add('selected');
+                    // Smooth scroll to keep selected chip visible
                     chip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                 }
             });
             
+            // Update slider to match selected parameter
             const chip = document.querySelector(`.param-chip[data-slider="${param}"]`);
             const min = parseInt(chip.dataset.min);
             const max = parseInt(chip.dataset.max);
@@ -1007,6 +1216,7 @@
             document.getElementById('sliderValueMini').textContent = currentValue;
         }
 
+        /* Handle slider input changes */
         function onSliderChange() {
             const value = parseInt(document.getElementById('activeSlider').value);
             document.getElementById('sliderValueMini').textContent = value;
@@ -1014,8 +1224,16 @@
             updatePreview();
         }
 
+        /*
+         * Real-time CSS-based preview
+         * Applies filters and transforms directly to the image element
+         * Much faster than server roundtrip for mobile
+         * Combines multiple adjustments into single filter string
+         */
         function updatePreview() {
             const img = document.getElementById('photoPreview');
+            
+            // Convert slider values to CSS filter parameters
             const brightness = (sliderValues.brightness / 100) + 1;
             const contrast = (sliderValues.contrast / 100) + 1;
             const saturation = (sliderValues.saturation / 100) + 1;
@@ -1027,10 +1245,14 @@
             const rotate = sliderValues.rotate;
             const vignette = sliderValues.vignette;
 
+            // Temperature affects hue (simplified mapping)
             let tempHue = hue + (temperature * 0.5);
             let vignetteEffect = vignette > 0 ? `drop-shadow(0 0 ${vignette}px rgba(0,0,0,0.5))` : '';
 
+            // Build CSS filter string
             let filter = `brightness(${brightness * exposure}) contrast(${contrast}) saturate(${saturation + vibrance}) hue-rotate(${tempHue}deg) blur(${blur}px) ${vignetteEffect}`;
+            
+            // Build transform string
             let transform = `rotate(${rotate}deg)`;
             if (mirrorActive) transform += ' scaleX(-1)';
 
@@ -1039,14 +1261,20 @@
             img.style.transformOrigin = 'center';
         }
 
-        // ============ CROP ============
+        // ============ CROP SYSTEM ============
         let cropDragMode = null;
         let cropStartData = {};
 
+        /*
+         * Initialize crop touch handlers
+         * Uses Pointer Events API for unified mouse/touch handling
+         * Supports box dragging and handle-based resizing
+         */
         function initCropHandlers() {
             const overlay = document.getElementById('cropOverlay');
             const box = document.getElementById('cropBox');
             
+            // Box drag handler
             box.addEventListener('pointerdown', function(e) {
                 if (!isCropping || e.target.classList.contains('crop-handle')) return;
                 cropDragMode = 'move';
@@ -1056,10 +1284,11 @@
                     boxLeft: box.offsetLeft,
                     boxTop: box.offsetTop
                 };
-                box.setPointerCapture(e.pointerId);
+                box.setPointerCapture(e.pointerId);  // Capture pointer for smooth dragging
                 e.preventDefault();
             });
             
+            // Handle resize handlers
             document.querySelectorAll('.crop-handle').forEach(handle => {
                 handle.addEventListener('pointerdown', function(e) {
                     if (!isCropping) return;
@@ -1078,6 +1307,11 @@
                 });
             });
             
+            /*
+             * Global pointer move handler
+             * Updates crop box position/size based on drag mode
+             * Constrains within photo area boundaries
+             */
             window.addEventListener('pointermove', function(e) {
                 if (!cropDragMode || !isCropping) return;
                 
@@ -1096,6 +1330,7 @@
                     box.style.left = newLeft + 'px';
                     box.style.top = newTop + 'px';
                 } else {
+                    // Handle-based resize logic
                     let newL = cropStartData.boxLeft;
                     let newT = cropStartData.boxTop;
                     let newW = cropStartData.boxWidth;
@@ -1106,9 +1341,11 @@
                     if (cropDragMode.includes('s')) newH = cropStartData.boxHeight + dy;
                     if (cropDragMode.includes('n')) { newH = cropStartData.boxHeight - dy; newT = cropStartData.boxTop + dy; }
                     
+                    // Minimum crop size (50px)
                     if (newW < 50) { newW = 50; if (cropDragMode.includes('w')) newL = cropStartData.boxLeft + cropStartData.boxWidth - 50; }
                     if (newH < 50) { newH = 50; if (cropDragMode.includes('n')) newT = cropStartData.boxTop + cropStartData.boxHeight - 50; }
                     
+                    // Constrain within bounds
                     newL = Math.max(0, newL);
                     newT = Math.max(0, newT);
                     newW = Math.min(newW, areaRect.width - newL);
@@ -1123,10 +1360,12 @@
                 updateCropCoords();
             });
             
+            // Release pointer capture on pointer up
             window.addEventListener('pointerup', function() {
                 cropDragMode = null;
             });
             
+            // Tap on overlay to reposition crop box
             overlay.addEventListener('pointerdown', function(e) {
                 if (!isCropping || e.target !== overlay) return;
                 
@@ -1147,12 +1386,18 @@
             });
         }
 
+        /* Set crop mode with optional aspect ratio lock */
         function setCropMode(mode) {
             document.querySelectorAll('#cropContent .crop-chip').forEach(chip => chip.classList.remove('active'));
             event.target.closest('.crop-chip').classList.add('active');
             startCrop(mode);
         }
 
+        /*
+         * Initialize crop overlay with proper sizing
+         * Accounts for image position within photo area
+         * Supports aspect ratio constraints
+         */
         function startCrop(mode) {
             isCropping = true;
             const overlay = document.getElementById('cropOverlay');
@@ -1168,6 +1413,7 @@
             const maxSize = Math.min(imgRect.width, imgRect.height);
             const size = maxSize * 0.55;
             
+            // Calculate aspect ratio
             let aspectRatio = null;
             if (mode === '1:1') aspectRatio = 1;
             else if (mode === '4:3') aspectRatio = 4/3;
@@ -1176,6 +1422,7 @@
             if (aspectRatio) {
                 boxW = size;
                 boxH = size / aspectRatio;
+                // Ensure box fits within image
                 if (boxH > imgRect.height * 0.8) {
                     boxH = imgRect.height * 0.8;
                     boxW = boxH * aspectRatio;
@@ -1189,6 +1436,7 @@
                 boxH = size;
             }
             
+            // Position crop box relative to image
             const imgLeft = imgRect.left - areaRect.left;
             const imgTop = imgRect.top - areaRect.top;
             
@@ -1200,6 +1448,11 @@
             updateCropCoords();
         }
 
+        /*
+         * Update hidden crop coordinate fields
+         * Converts pixel positions to percentage values
+         * Accounts for image offset within photo area
+         */
         function updateCropCoords() {
             const img = document.getElementById('photoPreview');
             const box = document.getElementById('cropBox');
@@ -1215,6 +1468,7 @@
             const imgLeft = imgRect.left - areaRect.left;
             const imgTop = imgRect.top - areaRect.top;
             
+            // Calculate percentages relative to image dimensions
             const x = ((boxL - imgLeft) / imgRect.width) * 100;
             const y = ((boxT - imgTop) / imgRect.height) * 100;
             const w = (boxW / imgRect.width) * 100;
@@ -1226,6 +1480,7 @@
             document.getElementById('cropH').value = Math.round(Math.min(100, Math.max(1, h)));
         }
 
+        /* Apply crop using CSS clip-path for visual feedback */
         function applyCrop() {
             updateCropCoords();
             const cropX = parseFloat(document.getElementById('cropX').value);
@@ -1234,6 +1489,7 @@
             const cropH = parseFloat(document.getElementById('cropH').value);
             
             const img = document.getElementById('photoPreview');
+            // inset() values: top right bottom left
             img.style.clipPath = `inset(${cropY}% ${100-cropX-cropW}% ${100-cropY-cropH}% ${cropX}%)`;
             
             document.getElementById('cropOverlay').classList.remove('active');
@@ -1245,11 +1501,13 @@
             isCropping = false;
         }
 
+        // ============ MIRROR & ROTATE ============
         function toggleMirror() {
             mirrorActive = !mirrorActive;
             updatePreview();
         }
 
+        /* Rotate 90 degrees left (counter-clockwise) */
         function rotateLeft() {
             sliderValues.rotate = (sliderValues.rotate - 90) % 360;
             document.getElementById('hiddenRotate').value = sliderValues.rotate;
@@ -1257,6 +1515,10 @@
         }
 
         // ============ QUICK FILTERS ============
+        /*
+         * Apply preset filter values
+         * Resets all sliders first, then applies filter-specific values
+         */
         function applyQuickFilter(filterName) {
             resetAllSliders();
             switch(filterName) {
@@ -1269,6 +1531,7 @@
                 case 'bw': sliderValues.saturation = -100; sliderValues.contrast = 15; break;
             }
             updatePreview();
+            // Update slider if on adjustments tab
             if (activeTab === 'adjustments') {
                 document.getElementById('activeSlider').value = sliderValues[activeSliderParam] || 0;
                 document.getElementById('sliderValueMini').textContent = sliderValues[activeSliderParam] || 0;
@@ -1279,6 +1542,7 @@
             for (let key in sliderValues) sliderValues[key] = 0;
         }
 
+        /* Full reset to original image */
         function resetChanges() {
             resetAllSliders();
             mirrorActive = false;
@@ -1290,6 +1554,10 @@
             cancelCrop();
         }
 
+        /*
+         * Global click handler to close more menu
+         * Closes when clicking outside the menu
+         */
         document.addEventListener('click', function(e) {
             const menu = document.getElementById('moreMenu');
             if (menu.classList.contains('show') && !e.target.closest('.more-btn') && !e.target.closest('.more-menu')) {
@@ -1297,6 +1565,7 @@
             }
         });
 
+        // Initialize preview on page load
         updatePreview();
     </script>
 </body>

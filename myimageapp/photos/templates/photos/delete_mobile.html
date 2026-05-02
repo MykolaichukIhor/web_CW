@@ -1,11 +1,30 @@
+<!--
+    Delete Photo Confirmation Page - Mobile Optimized Version
+    Dark-themed interface with gradient background for visual appeal.
+    Displays photo preview and asks for deletion confirmation.
+    Uses mobile-friendly button layout with full-width buttons.
+-->
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset='utf-8'>
+    
+    <!-- 
+        Mobile viewport without maximum-scale restriction
+        Allows user zooming for accessibility
+    -->
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <title>Delete Photo</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <style>
+        /*
+         * Dark gradient background
+         * Deep purple-to-blue gradient creates premium look
+         * min-height: 100vh ensures full viewport coverage
+         * flex display centers content vertically
+         */
         body {
             background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
             min-height: 100vh;
@@ -13,6 +32,11 @@
             align-items: center;
         }
         
+        /*
+         * Semi-transparent card with glass morphism effect
+         * backdrop-filter creates frosted glass appearance
+         * Dark background ensures text readability
+         */
         .card {
             background: rgba(20, 20, 40, 0.95);
             backdrop-filter: blur(10px);
@@ -21,6 +45,7 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
         
+        /* Card body with light text for contrast */
         .card-body {
             color: #f0f0f0;
             padding: 25px;
@@ -31,21 +56,37 @@
             font-weight: 500;
         }
         
+        /*
+         * Danger text with custom red color
+         * !important needed to override Bootstrap
+         * Bold weight for emphasis on destructive action
+         */
         .text-danger {
             color: #ff4757 !important;
             font-weight: 500;
         }
         
+        /*
+         * Image styling with subtle border and hover effect
+         * transition for smooth transform animation
+         * border-radius for rounded corners
+         */
         img {
             border-radius: 15px;
             border: 2px solid rgba(255,255,255,0.1);
             transition: transform 0.3s ease;
         }
         
+        /* Subtle scale on hover for interactive feedback */
         img:hover {
             transform: scale(1.02);
         }
         
+        /*
+         * Button base styling
+         * Rounded corners for modern look
+         * Bold text for readability
+         */
         .btn {
             border-radius: 12px;
             padding: 10px;
@@ -53,16 +94,30 @@
             transition: all 0.3s ease;
         }
         
+        /*
+         * Delete button with gradient background
+         * Red gradient from bright to dark red
+         * No border for clean appearance
+         */
         .btn-danger {
             background: linear-gradient(135deg, #ff4757, #c0392b);
             border: none;
         }
         
+        /* 
+         * Hover effect: lift button up with shadow
+         * Red shadow creates glow effect
+         */
         .btn-danger:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(255,71,87,0.4);
         }
         
+        /*
+         * Secondary/cancel button
+         * Semi-transparent white background
+         * Subtle border for definition
+         */
         .btn-secondary {
             background: rgba(255,255,255,0.1);
             border: 1px solid rgba(255,255,255,0.2);
@@ -74,13 +129,18 @@
             transform: translateY(-2px);
         }
         
+        /*
+         * RESPONSIVE ADJUSTMENTS
+         * Smaller padding on very small screens
+         * Larger buttons for easier touch targets
+         */
         @media (max-width: 576px) {
             .card-body {
                 padding: 20px;
             }
             
             .btn {
-                padding: 12px;
+                padding: 12px;  /* Larger touch target for mobile */
             }
         }
     </style>
@@ -88,17 +148,51 @@
 <body class="p-3">
     <div class="container">
         <div class="card">
+            <!-- 
+                Centered content for mobile-friendly layout
+                All content in single column
+            -->
             <div class="card-body text-center">
+                
+                <!-- 
+                    Photo preview
+                    Shows the image that will be deleted
+                    Rounded corners via Bootstrap class
+                -->
                 <img src="{{ photo.image.url }}" alt="Photo" class="img-fluid mb-3 rounded">
                 
+                <!-- 
+                    Photo description as title
+                    Falls back to generic "Photo" if no description
+                -->
                 <h5 class="mb-3">{{ photo.description|default:"Photo" }}</h5>
                 
+                <!-- 
+                    Deletion confirmation question
+                    Danger styling (red) emphasizes destructive action
+                -->
                 <p class="text-danger">Delete this photo?</p>
                 
+                <!-- 
+                    Action form with CSRF protection
+                    d-grid creates full-width button layout
+                    gap-2 adds spacing between buttons
+                -->
                 <form method="POST">
                     {% csrf_token %}
                     <div class="d-grid gap-2">
+                        <!-- 
+                            Delete button - primary action
+                            Full-width for easy mobile tapping
+                            Placed first for visual prominence
+                        -->
                         <button type="submit" class="btn btn-danger">Delete</button>
+                        
+                        <!-- 
+                            Cancel button - secondary action
+                            Returns to gallery without deletion
+                            Full-width to match delete button
+                        -->
                         <a href="{% url 'gallery' %}" class="btn btn-secondary">Cancel</a>
                     </div>
                 </form>

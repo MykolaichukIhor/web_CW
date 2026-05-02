@@ -1,3 +1,9 @@
+<!--
+    Delete Photo Confirmation Page - Desktop Version
+    Displays photo preview and metadata before deletion.
+    Requires user confirmation via POST request.
+    Uses CSRF protection for secure deletion.
+-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,27 +11,68 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>Delete Photo</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
+    
+    <!-- Bootstrap 5.3.8 CSS with integrity hash -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" 
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
 <body class="m-5">
     <div class="container">
         <div class="row justify-content-center">
+            <!-- Centered column - takes 6/12 columns on medium screens -->
             <div class="col-md-6">
+                
+                <!-- Delete confirmation card -->
                 <div class="card">
                     <div class="card-header">
                         <h3>Delete Photo</h3>
                     </div>
                     <div class="card-body">
+                        
+                        <!-- 
+                            Photo preview thumbnail
+                            Displays the image that will be deleted
+                            img-fluid makes it responsive
+                        -->
                         <div class="mb-3">
                             <img src="{{ photo.image.url }}" alt="Photo" class="img-fluid">
                         </div>
+                        
+                        <!-- 
+                            Confirmation message
+                            Simple text asking for user confirmation
+                            No JavaScript confirm dialog - relies on form submission
+                        -->
                         <p>Are you sure you want to delete this photo?</p>
+                        
+                        <!-- 
+                            Photo metadata display
+                            Shows description with fallback for empty fields
+                            Shows category name with fallback
+                            Uses default filter for safe empty value handling
+                        -->
                         <p><strong>Description:</strong> {{ photo.description|default:"No description" }}</p>
                         <p><strong>Category:</strong> {{ photo.category.name|default:"None" }}</p>
+                        
+                        <!-- 
+                            Action form with CSRF protection
+                            Cancel link returns to gallery without action
+                            Delete button submits POST to perform deletion
+                            Two-button layout for clear choice
+                        -->
                         <form method="POST">
                             {% csrf_token %}
+                            <!-- 
+                                Cancel button styled as secondary
+                                Uses anchor tag for simple navigation (GET request)
+                            -->
                             <a href="{% url 'gallery' %}" class="btn btn-secondary">Cancel</a>
+                            
+                            <!-- 
+                                Delete confirmation button
+                                Danger styling (red) indicates destructive action
+                                type="submit" triggers form POST
+                            -->
                             <button type="submit" class="btn btn-danger">Delete</button>
                         </form>
                     </div>

@@ -5,12 +5,12 @@ from django.urls import reverse_lazy
 
 from . import views
 
-# Дозволяємо GET тільки для зворотної сумісності, але виконуємо вихід
+
 class CustomLogoutView(LogoutView):
     http_method_names = ['get', 'post']
     
     def get(self, request, *args, **kwargs):
-        # Виконуємо вихід навіть при GET-запиті
+        
         return self.post(request, *args, **kwargs)
 
 urlpatterns = [
