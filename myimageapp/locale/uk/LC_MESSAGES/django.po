@@ -1,0 +1,696 @@
+# Ukrainian translation for Image Gallery App
+# Copyright (C) 2024 Image Gallery
+# This file is distributed under the same license as the PACKAGE package.
+# Translators, 2024
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Image Gallery 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-01 18:53+0300\n"
+"PO-Revision-Date: 2024-04-30 12:00+0000\n"
+"Last-Translator: Auto\n"
+"Language-Team: Ukrainian <uk@li.org>\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: .\photos\forms.py:8
+msgid "Create new category"
+msgstr "Створити нову категорію"
+
+#: .\photos\forms.py:14
+msgid "Optional description"
+msgstr "Необов'язковий опис"
+
+#: .\photos\templates\photos\edit.html:7
+msgid "Edit Photo"
+msgstr "Редагувати фото"
+
+#: .\photos\templates\photos\edit.html:410
+msgid "Go Back"
+msgstr "Повернутися"
+
+#: .\photos\templates\photos\edit.html:411
+msgid "Save as"
+msgstr "Зберегти як"
+
+#: .\photos\templates\photos\edit.html:412
+#: .\photos\templates\photos\edit.html:615
+#: .\photos\templates\photos\edit.html:914
+#: .\photos\templates\photos\edit_mobile.html:661
+#: .\photos\templates\photos\edit_mobile.html:790
+#: .\photos\templates\photos\edit_mobile.html:841
+msgid "Save"
+msgstr "Зберегти"
+
+#: .\photos\templates\photos\edit.html:413
+msgid "Reset"
+msgstr "Скинути"
+
+#: .\photos\templates\photos\edit.html:432
+#: .\photos\templates\photos\gallery.html:1025
+#: .\photos\templates\photos\login.html:151
+#: .\photos\templates\photos\photo.html:427
+#: .\photos\templates\photos\signup.html:97
+#: .\photos\templates\photos\upload.html:140
+msgid "Toggle theme"
+msgstr ""
+
+#: .\photos\templates\photos\edit.html:435
+#: .\photos\templates\photos\edit_mobile.html:775
+msgid "Adjustments"
+msgstr "Налаштування"
+
+#: .\photos\templates\photos\edit.html:441
+#: .\photos\templates\photos\edit_mobile.html:776
+msgid "Crop"
+msgstr "Обрізати"
+
+#: .\photos\templates\photos\edit.html:442
+#: .\photos\templates\photos\edit_mobile.html:755
+msgid "Mirror"
+msgstr "Відзеркалити"
+
+#: .\photos\templates\photos\edit.html:443
+#: .\photos\templates\photos\gallery_mobile.html:754
+msgid "Filter"
+msgstr "Фільтри"
+
+#: .\photos\templates\photos\edit.html:478
+msgid "Image Preview"
+msgstr "Попередній перегляд зображення"
+
+#: .\photos\templates\photos\edit.html:482
+#: .\photos\templates\photos\photo_mobile.html:222
+#: .\photos\templates\photos\photo_mobile.html:233
+msgid "Photo"
+msgstr "Фото"
+
+#: .\photos\templates\photos\edit.html:495
+#: .\photos\templates\photos\edit_mobile.html:759
+msgid "Apply"
+msgstr "Застосувати"
+
+#: .\photos\templates\photos\edit.html:496
+#: .\photos\templates\photos\edit.html:614
+#: .\photos\templates\photos\edit_mobile.html:758
+#: .\photos\templates\photos\edit_mobile.html:789
+#: .\photos\templates\photos\edit_mobile.html:837
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: .\photos\templates\photos\edit.html:504
+#: .\photos\templates\photos\edit_mobile.html:801
+#: .\photos\templates\photos\photo.html:473
+#: .\photos\templates\photos\upload.html:173
+msgid "Description"
+msgstr "Опис"
+
+#: .\photos\templates\photos\edit.html:508
+#: .\photos\templates\photos\edit_mobile.html:808
+#: .\photos\templates\photos\gallery_mobile.html:712
+#: .\photos\templates\photos\photo.html:486
+#: .\photos\templates\photos\upload.html:177
+msgid "Category"
+msgstr "Категорія"
+
+#: .\photos\templates\photos\edit.html:512
+#: .\photos\templates\photos\edit_mobile.html:820
+#: .\photos\templates\photos\upload.html:181
+msgid "Or create new category"
+msgstr "Або створити нову категорію"
+
+#: .\photos\templates\photos\edit.html:524
+msgid "Adjustment Panel"
+msgstr "Панель налаштувань"
+
+#: .\photos\templates\photos\edit.html:525
+msgid "Close adjustments"
+msgstr "Закрити налаштування"
+
+#: .\photos\templates\photos\edit.html:529
+msgid "Core adjustments"
+msgstr "Основні налаштування"
+
+#: .\photos\templates\photos\edit.html:530
+#: .\photos\templates\photos\edit_mobile.html:737
+msgid "Brightness"
+msgstr "Яскравість"
+
+#: .\photos\templates\photos\edit.html:532
+#: .\photos\templates\photos\edit_mobile.html:738
+msgid "Contrast"
+msgstr "Контраст"
+
+#: .\photos\templates\photos\edit.html:534
+#: .\photos\templates\photos\edit_mobile.html:739
+msgid "Exposure"
+msgstr "Експозиція"
+
+#: .\photos\templates\photos\edit.html:536
+msgid "Highlights"
+msgstr "Відблиски"
+
+#: .\photos\templates\photos\edit.html:538
+msgid "Shadows"
+msgstr "Тіні"
+
+#: .\photos\templates\photos\edit.html:543
+msgid "Color controls"
+msgstr "Кольорові керування"
+
+#: .\photos\templates\photos\edit.html:544
+#: .\photos\templates\photos\edit_mobile.html:740
+msgid "Saturation"
+msgstr "Насиченість"
+
+#: .\photos\templates\photos\edit.html:546
+#: .\photos\templates\photos\edit_mobile.html:741
+msgid "Vibrance"
+msgstr "Живість"
+
+#: .\photos\templates\photos\edit.html:548
+#: .\photos\templates\photos\edit_mobile.html:742
+msgid "Temperature"
+msgstr "Температура"
+
+#: .\photos\templates\photos\edit.html:550
+#: .\photos\templates\photos\edit_mobile.html:743
+msgid "Tint"
+msgstr "Тінт"
+
+#: .\photos\templates\photos\edit.html:552
+#: .\photos\templates\photos\edit_mobile.html:744
+msgid "Hue"
+msgstr "Х'ю"
+
+#: .\photos\templates\photos\edit.html:557
+msgid "Detail & sharpness"
+msgstr "Деталізація та різкість"
+
+#: .\photos\templates\photos\edit.html:558
+#: .\photos\templates\photos\edit_mobile.html:745
+msgid "Sharpness"
+msgstr "Різкість"
+
+#: .\photos\templates\photos\edit.html:560
+msgid "Clarity"
+msgstr "Чіткість"
+
+#: .\photos\templates\photos\edit.html:562
+msgid "Noise reduction"
+msgstr "Зменшення шуму"
+
+#: .\photos\templates\photos\edit.html:564
+msgid "Texture"
+msgstr "Текстура"
+
+#: .\photos\templates\photos\edit.html:569
+msgid "Geometry & framing"
+msgstr "Геометрія та кадрування"
+
+#: .\photos\templates\photos\edit.html:572
+msgid "Mirror horizontally"
+msgstr "Віддзеркалити горизонтально"
+
+#: .\photos\templates\photos\edit.html:574
+#: .\photos\templates\photos\edit_mobile.html:756
+msgid "Rotate"
+msgstr "Повернути"
+
+#: .\photos\templates\photos\edit.html:576
+msgid "Straighten"
+msgstr "Вирівняти"
+
+#: .\photos\templates\photos\edit.html:578
+#, fuzzy, python-format
+#| msgid "Resize / Scale (%)"
+msgid "Resize / Scale (%%)"
+msgstr "Змінити розмір / Масштаб (%)"
+
+#: .\photos\templates\photos\edit.html:583
+msgid "Effects"
+msgstr "Ефекти"
+
+#: .\photos\templates\photos\edit.html:584
+#: .\photos\templates\photos\edit_mobile.html:746
+msgid "Blur"
+msgstr "Розмиття"
+
+#: .\photos\templates\photos\edit.html:586
+msgid "Vignette"
+msgstr "Віньєта"
+
+#: .\photos\templates\photos\edit.html:596
+msgid "Quick Filters"
+msgstr "Швидкі фільтри"
+
+#: .\photos\templates\photos\edit.html:597
+#: .\photos\templates\photos\edit_mobile.html:764
+msgid "Bright"
+msgstr "Яскравий"
+
+#: .\photos\templates\photos\edit.html:598
+#: .\photos\templates\photos\edit_mobile.html:765
+msgid "Warm"
+msgstr "Теплий"
+
+#: .\photos\templates\photos\edit.html:599
+#: .\photos\templates\photos\edit_mobile.html:766
+msgid "Cool"
+msgstr "Холодний"
+
+#: .\photos\templates\photos\edit.html:600
+#: .\photos\templates\photos\edit_mobile.html:767
+msgid "Vivid"
+msgstr "Вівід"
+
+#: .\photos\templates\photos\edit.html:601
+#: .\photos\templates\photos\edit_mobile.html:768
+msgid "Muted"
+msgstr "Приглушений"
+
+#: .\photos\templates\photos\edit.html:602
+#: .\photos\templates\photos\edit_mobile.html:769
+msgid "Sepia"
+msgstr "Сепія"
+
+#: .\photos\templates\photos\edit.html:603
+#: .\photos\templates\photos\edit_mobile.html:770
+msgid "B&W"
+msgstr "Ч/Б"
+
+#: .\photos\templates\photos\edit.html:604
+#: .\photos\templates\photos\gallery.html:969
+#: .\photos\templates\photos\gallery_mobile.html:828
+msgid "Close"
+msgstr "Закрити"
+
+#: .\photos\templates\photos\edit.html:610
+msgid "Save as new image"
+msgstr "Зберегти як нове зображення"
+
+#: .\photos\templates\photos\edit.html:611
+msgid "Enter a new filename for your edited photo:"
+msgstr "Введіть нове ім'я файлу для відредагованого фото:"
+
+#: .\photos\templates\photos\edit.html:612
+msgid "e.g., edited_image.jpg"
+msgstr "наприклад, edited_image.jpg"
+
+# JavaScript strings from edit.html
+#: .\photos\templates\photos\edit.html:879
+msgid "Unsaved changes will be lost. Are you sure you want to go back?"
+msgstr "Незбережені зміни будуть втрачені. Ви впевнені, що хочете повернутися?"
+
+#: .\photos\templates\photos\edit.html:896
+msgid "Please enter a new image name."
+msgstr "Будь ласка, введіть нове ім'я зображення."
+
+#: .\photos\templates\photos\edit_mobile.html:8
+#, fuzzy
+#| msgid "Edit Photo"
+msgid "Edit Photo - Mobile"
+msgstr "Редагувати фото"
+
+#: .\photos\templates\photos\edit_mobile.html:670
+msgid "Save as copy..."
+msgstr "Зберегти як..."
+
+#: .\photos\templates\photos\edit_mobile.html:751
+msgid "Free"
+msgstr ""
+
+#: .\photos\templates\photos\edit_mobile.html:771
+msgid "Original"
+msgstr ""
+
+#: .\photos\templates\photos\edit_mobile.html:777
+msgid "Filters"
+msgstr "Фільтри"
+
+#: .\photos\templates\photos\edit_mobile.html:778
+msgid "Details"
+msgstr "Деталі"
+
+#: .\photos\templates\photos\edit_mobile.html:785
+#, fuzzy
+#| msgid "Save as copy..."
+msgid "Save as copy"
+msgstr "Зберегти як..."
+
+#: .\photos\templates\photos\edit_mobile.html:786
+#, fuzzy
+#| msgid "Please enter a filename."
+msgid "Enter new filename..."
+msgstr "Будь ласка, введіть ім'я файлу."
+
+#: .\photos\templates\photos\edit_mobile.html:798
+#, fuzzy
+#| msgid "Photo details"
+msgid "Photo Details"
+msgstr "Деталі фото"
+
+#: .\photos\templates\photos\edit_mobile.html:804
+#, fuzzy
+#| msgid " Search by description..."
+msgid "Photo description..."
+msgstr " Пошук за описом..."
+
+#: .\photos\templates\photos\edit_mobile.html:810
+#, fuzzy
+#| msgid "Select date"
+msgid "Select category"
+msgstr "Виберіть дату"
+
+#: .\photos\templates\photos\edit_mobile.html:821
+msgid "New category name..."
+msgstr ""
+
+#: .\photos\templates\photos\edit_mobile.html:825
+#, fuzzy
+#| msgid "Username"
+msgid "Filename"
+msgstr "Ім'я користувача"
+
+#: .\photos\templates\photos\edit_mobile.html:830
+msgid "Created"
+msgstr ""
+
+#: .\photos\templates\photos\edit_mobile.html:868
+msgid "Unsaved changes will be lost. Go back?"
+msgstr "Незбережені зміни будуть втрачені. Повернутися?"
+
+#: .\photos\templates\photos\edit_mobile.html:892
+msgid "Please enter a filename."
+msgstr "Будь ласка, введіть ім'я файлу."
+
+#: .\photos\templates\photos\gallery.html:8
+#, fuzzy
+#| msgid "My Gallery"
+msgid "Gallery"
+msgstr "Моя Галерея"
+
+#: .\photos\templates\photos\gallery.html:963
+#: .\photos\templates\photos\gallery.html:998
+#: .\photos\templates\photos\gallery_mobile.html:680
+msgid "Search"
+msgstr "Пошук"
+
+#: .\photos\templates\photos\gallery.html:978
+msgid " Search by description..."
+msgstr " Пошук за описом..."
+
+#: .\photos\templates\photos\gallery.html:982
+#: .\photos\templates\photos\gallery_mobile.html:664
+msgid "After"
+msgstr "Після"
+
+#: .\photos\templates\photos\gallery.html:983
+#: .\photos\templates\photos\gallery_mobile.html:665
+msgid "Before"
+msgstr "До"
+
+#: .\photos\templates\photos\gallery.html:984
+#: .\photos\templates\photos\gallery_mobile.html:666
+msgid "Between"
+msgstr "Між"
+
+#: .\photos\templates\photos\gallery.html:988
+#: .\photos\templates\photos\gallery_mobile.html:670
+msgid "Select date"
+msgstr "Виберіть дату"
+
+#: .\photos\templates\photos\gallery.html:992
+#: .\photos\templates\photos\gallery_mobile.html:674
+msgid "From date"
+msgstr "Від дати"
+
+#: .\photos\templates\photos\gallery.html:993
+#: .\photos\templates\photos\gallery_mobile.html:675
+msgid "To date"
+msgstr "До дати"
+
+#: .\photos\templates\photos\gallery.html:1001
+#: .\photos\templates\photos\gallery_mobile.html:683
+msgid "Clear"
+msgstr "Очистити"
+
+#: .\photos\templates\photos\gallery.html:1056
+#: .\photos\templates\photos\upload.html:184
+msgid "Upload"
+msgstr "Завантажити"
+
+#: .\photos\templates\photos\gallery.html:1060
+msgid "Logout"
+msgstr "Вийти"
+
+#: .\photos\templates\photos\gallery_mobile.html:7
+#: .\photos\templates\photos\gallery_mobile.html:634
+#, fuzzy
+#| msgid "My Gallery"
+msgid "My Gallery"
+msgstr "Моя Галерея"
+
+#: .\photos\templates\photos\gallery_mobile.html:660
+#, fuzzy
+#| msgid " Search by description..."
+msgid "Search by description..."
+msgstr " Пошук за описом..."
+
+#: .\photos\templates\photos\gallery_mobile.html:694
+msgid "Name"
+msgstr ""
+
+#: .\photos\templates\photos\gallery_mobile.html:695
+msgid "Date"
+msgstr ""
+
+#: .\photos\templates\photos\gallery_mobile.html:696
+#, fuzzy
+#| msgid "From date"
+msgid "From"
+msgstr "Від дати"
+
+#: .\photos\templates\photos\gallery_mobile.html:696
+msgid "To"
+msgstr ""
+
+#: .\photos\templates\photos\gallery_mobile.html:697
+msgid "results"
+msgstr ""
+
+#: .\photos\templates\photos\gallery_mobile.html:711
+#, fuzzy
+#| msgid "Description"
+msgid "No description"
+msgstr "Опис"
+
+#: .\photos\templates\photos\gallery_mobile.html:712
+msgid "None"
+msgstr ""
+
+#: .\photos\templates\photos\gallery_mobile.html:713
+#: .\photos\templates\photos\photo.html:501
+msgid "Uploaded"
+msgstr "Завантажено"
+
+#: .\photos\templates\photos\gallery_mobile.html:722
+#: .\photos\templates\photos\photo.html:437
+#: .\photos\templates\photos\photo_mobile.html:244
+msgid "Edit"
+msgstr "Редагувати"
+
+#: .\photos\templates\photos\gallery_mobile.html:724
+#: .\photos\templates\photos\photo.html:439
+msgid "Are you sure you want to delete this photo?"
+msgstr "Ви впевнені, що хочете видалити це фото?"
+
+#: .\photos\templates\photos\gallery_mobile.html:726
+#: .\photos\templates\photos\photo.html:442
+#: .\photos\templates\photos\photo_mobile.html:256
+msgid "Delete"
+msgstr "Видалити"
+
+#: .\photos\templates\photos\gallery_mobile.html:739
+msgid "No photos found."
+msgstr ""
+
+#: .\photos\templates\photos\gallery_mobile.html:740
+msgid "Try different search criteria"
+msgstr ""
+
+#: .\photos\templates\photos\gallery_mobile.html:740
+msgid "Use the Add button to upload your first image"
+msgstr ""
+
+#: .\photos\templates\photos\gallery_mobile.html:750
+msgid "Home"
+msgstr "Головна"
+
+#: .\photos\templates\photos\gallery_mobile.html:758
+msgid "Add"
+msgstr "Додати"
+
+#: .\photos\templates\photos\gallery_mobile.html:760
+#: .\photos\templates\photos\gallery_mobile.html:762
+#: .\photos\templates\photos\gallery_mobile.html:796
+msgid "Settings"
+msgstr "Налаштування"
+
+#: .\photos\templates\photos\gallery_mobile.html:771
+#, fuzzy
+#| msgid "Category"
+msgid "Categories"
+msgstr "Категорія"
+
+#: .\photos\templates\photos\gallery_mobile.html:779
+#, fuzzy
+#| msgid "Photo"
+msgid "All Photos"
+msgstr "Фото"
+
+#: .\photos\templates\photos\gallery_mobile.html:799
+msgid "Theme"
+msgstr ""
+
+#: .\photos\templates\photos\gallery_mobile.html:802
+#, fuzzy
+#| msgid "Bright"
+msgid "Light"
+msgstr "Яскравий"
+
+#: .\photos\templates\photos\gallery_mobile.html:805
+msgid "Dark"
+msgstr ""
+
+#: .\photos\templates\photos\gallery_mobile.html:811
+msgid "Language"
+msgstr ""
+
+#: .\photos\templates\photos\gallery_mobile.html:1013
+#, fuzzy
+#| msgid "Are you sure you want to delete this photo?"
+msgid "Are you sure you want to logout?"
+msgstr "Ви впевнені, що хочете видалити це фото?"
+
+#: .\photos\templates\photos\login.html:7
+#: .\photos\templates\photos\login.html:173
+#: .\photos\templates\photos\login.html:198
+#: .\photos\templates\photos\signup.html:7
+#: .\photos\templates\photos\signup.html:119
+#: .\photos\templates\photos\signup.html:143
+msgid "Login"
+msgstr "Увійти"
+
+#: .\photos\templates\photos\login.html:180
+#: .\photos\templates\photos\signup.html:134
+msgid "Username"
+msgstr "Ім'я користувача"
+
+#: .\photos\templates\photos\login.html:185
+#: .\photos\templates\photos\signup.html:139
+msgid "Password"
+msgstr "Пароль"
+
+#: .\photos\templates\photos\login.html:202
+#: .\photos\templates\photos\signup.html:146
+msgid "Don't have an account?"
+msgstr "Немає облікового запису?"
+
+#: .\photos\templates\photos\login.html:202
+#: .\photos\templates\photos\signup.html:146
+msgid "Sign up here"
+msgstr "Зареєструватися тут"
+
+#: .\photos\templates\photos\photo.html:7
+msgid "Photo Gallery - Preview"
+msgstr "Галерея фото - Попередній перегляд"
+
+#: .\photos\templates\photos\photo.html:406
+#: .\photos\templates\photos\upload.html:160
+msgid "Back to Gallery"
+msgstr "Повернутися"
+
+#: .\photos\templates\photos\photo.html:410
+#: .\photos\templates\photos\photo.html:468
+msgid "Photo details"
+msgstr "Деталі фото"
+
+#: .\photos\templates\photos\photo.html:451
+#, fuzzy
+#| msgid "Fullscreen"
+msgid "Fullscreen mode"
+msgstr "Повноекранний"
+
+#: .\photos\templates\photos\photo.html:452
+msgid "Fullscreen"
+msgstr "Повноекранний"
+
+#: .\photos\templates\photos\photo.html:479
+msgid "No description provided"
+msgstr "Опис не надано"
+
+#: .\photos\templates\photos\photo.html:494
+msgid "— None —"
+msgstr "— Немає —"
+
+#: .\photos\templates\photos\photo_mobile.html:8
+msgid "Photo View - Mobile"
+msgstr ""
+
+#: .\photos\templates\photos\photo_mobile.html:250
+msgid "Favorite"
+msgstr "Обрані"
+
+#: .\photos\templates\photos\photo_mobile.html:303
+msgid "Favorites feature coming soon!"
+msgstr "Функція улюблених фото з'явиться незабаром!"
+
+#: .\photos\templates\photos\upload.html:7
+#: .\photos\templates\photos\upload.html:163
+msgid "Upload Photo"
+msgstr "Завантажити фото"
+
+#: .\photos\templates\photos\upload.html:169
+msgid "Image"
+msgstr "Зображення"
+
+#: .\photos\views.py:485
+msgid "Photo uploaded successfully!"
+msgstr "Фото успішно завантажено!"
+
+#: .\photos\views.py:570
+#, python-brace-format
+msgid "New photo saved as: {}"
+msgstr "Нове фото збережено як: {}"
+
+#: .\photos\views.py:598
+msgid "Photo updated successfully!"
+msgstr "Фото успішно оновлено!"
+
+#: .\photos\views.py:699
+#, python-brace-format
+msgid "Photo \"{}\" deleted successfully!"
+msgstr "Фото \"{}\" успішно видалено!"
+
+#~ msgid "Sign Up"
+#~ msgstr "Зареєструватися"
+
+#~ msgid "Create Account"
+#~ msgstr "Створити обліковий запис"
+
+#~ msgid "Already have an account?"
+#~ msgstr "Вже маєте обліковий запис?"
+
+#~ msgid "Login here"
+#~ msgstr "Увійдіть тут"
+
+
+msgid "Favorite"
+
+

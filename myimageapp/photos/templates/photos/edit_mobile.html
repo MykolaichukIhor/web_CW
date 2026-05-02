@@ -1,0 +1,1303 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" data-bs-theme="light">
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>{% trans "Edit Photo - Mobile" %}</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-primary: #fffff0;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f8f9fa;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --accent: #0d6efd;
+            --chip-bg: rgba(0, 0, 0, 0.05);
+            --tab-active-bg: rgba(0, 0, 0, 0.1);
+            --slider-track: rgba(0, 0, 0, 0.2);
+            --slider-thumb: #0d6efd;
+            --border-subtle: rgba(0, 0, 0, 0.08);
+            --overlay-bg: rgba(0, 0, 0, 0.5);
+        }
+
+        [data-bs-theme="dark"] {
+            --bg-primary: #000000;
+            --bg-secondary: #1c1c1e;
+            --bg-tertiary: #2c2c2e;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --accent: #0a84ff;
+            --chip-bg: rgba(255, 255, 255, 0.12);
+            --tab-active-bg: rgba(255, 255, 255, 0.15);
+            --slider-track: rgba(255, 255, 255, 0.3);
+            --slider-thumb: #ffffff;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --overlay-bg: rgba(0, 0, 0, 0.7);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            background: var(--bg-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            height: 100dvh;
+            width: 100vw;
+            color: var(--text-primary);
+            touch-action: manipulation;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* ============ TOP BAR ============ */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            z-index: 200;
+            padding: 8px 8px;
+            padding-top: max(8px, env(safe-area-inset-top));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 0.5px solid var(--border-subtle);
+        }
+
+        .top-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+        }
+
+        .top-btn:active {
+            opacity: 0.6;
+        }
+
+        .top-btn.cancel-btn {
+            font-size: 22px;
+        }
+
+        .top-right-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .top-btn.save-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--accent);
+            padding: 10px 14px;
+        }
+
+        .top-btn.more-btn {
+            font-size: 20px;
+            padding: 10px 12px;
+        }
+
+        .more-menu {
+            position: absolute;
+            top: calc(100% + 4px);
+            right: 8px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 8px;
+            min-width: 180px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 0.5px solid var(--border-subtle);
+            display: none;
+            z-index: 300;
+        }
+
+        .more-menu.show {
+            display: block;
+        }
+
+        .more-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 15px;
+            transition: background 0.2s;
+        }
+
+        .more-menu-item:active {
+            background: var(--tab-active-bg);
+        }
+
+        .more-menu-item i {
+            width: 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        /* ============ PHOTO AREA ============ */
+        .photo-area {
+            position: fixed;
+            top: 50px;
+            left: 0;
+            right: 0;
+            bottom: 190px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            background: var(--bg-primary);
+        }
+
+        .preview-image {
+            max-width: 90vw;
+            max-height: calc(100dvh - 250px);
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            pointer-events: none;
+        }
+
+        /* ============ SLIDER + BOTTOM PANEL ============ */
+        .bottom-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            z-index: 200;
+            padding: 0 16px;
+            padding-bottom: max(12px, calc(env(safe-area-inset-bottom) + 8px));
+            border-top: 0.5px solid var(--border-subtle);
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 2px 4px 6px;
+            margin-bottom: 2px;
+        }
+
+        .mini-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            flex: 1;
+            height: 3px;
+            background: var(--slider-track);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .mini-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--slider-thumb);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .slider-value-mini {
+            font-size: 11px;
+            color: var(--text-secondary);
+            min-width: 24px;
+            text-align: right;
+        }
+
+        /* Великі кнопки параметрів */
+        .params-scroll {
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding: 4px 0;
+            margin-bottom: 2px;
+        }
+
+        .params-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .params-row {
+            display: inline-flex;
+            gap: 6px;
+        }
+
+        .param-chip {
+            background: var(--chip-bg);
+            border: none;
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 8px 14px;
+            border-radius: 18px;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .param-chip:active {
+            background: var(--tab-active-bg);
+        }
+
+        .param-chip.selected {
+            background: var(--accent);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* Crop chips */
+        .crop-chips {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            padding: 4px 0;
+            margin-bottom: 2px;
+        }
+
+        .crop-chip {
+            background: var(--chip-bg);
+            border: none;
+            color: var(--text-primary);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 8px 14px;
+            border-radius: 18px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .crop-chip:active {
+            background: var(--tab-active-bg);
+        }
+
+        .crop-chip.active {
+            background: var(--accent);
+            color: #ffffff;
+        }
+
+        .crop-actions {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            margin-top: 4px;
+        }
+
+        .crop-action-btn {
+            flex: 1;
+            background: none;
+            border: 1px solid var(--slider-track);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 10px;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .crop-action-btn.apply {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #ffffff;
+        }
+
+        .crop-action-btn:active {
+            opacity: 0.7;
+        }
+
+        /* Quick filters */
+        .quick-filters {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            padding: 4px 0;
+            margin-bottom: 2px;
+        }
+
+        .quick-filter-chip {
+            background: var(--chip-bg);
+            border: none;
+            color: var(--text-primary);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 8px 14px;
+            border-radius: 18px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .quick-filter-chip:active {
+            background: var(--tab-active-bg);
+        }
+
+        /* Маленькі вкладки */
+        .tab-row {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            padding: 4px 0 2px;
+            border-top: 0.5px solid var(--border-subtle);
+        }
+
+        .tab-btn-small {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 12px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn-small.active {
+            background: var(--tab-active-bg);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .tab-btn-small:active {
+            opacity: 0.7;
+        }
+
+        /* ============ CROP OVERLAY ============ */
+        .crop-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: none;
+            touch-action: none;
+            cursor: crosshair;
+        }
+
+        .crop-overlay.active {
+            display: block;
+        }
+
+        .crop-box {
+            position: absolute;
+            border: 2px solid var(--text-primary);
+            cursor: move;
+            touch-action: none;
+            z-index: 2;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
+        }
+
+        .crop-handle {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: var(--text-primary);
+            border-radius: 50%;
+            z-index: 3;
+            touch-action: none;
+        }
+
+        .crop-handle-nw { top: -11px; left: -11px; cursor: nw-resize; }
+        .crop-handle-ne { top: -11px; right: -11px; cursor: ne-resize; }
+        .crop-handle-sw { bottom: -11px; left: -11px; cursor: sw-resize; }
+        .crop-handle-se { bottom: -11px; right: -11px; cursor: se-resize; }
+
+        .crop-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .crop-grid-line {
+            position: absolute;
+            background: var(--slider-track);
+        }
+
+        .crop-grid-line.h {
+            left: 0;
+            right: 0;
+            height: 1px;
+        }
+
+        .crop-grid-line.v {
+            top: 0;
+            bottom: 0;
+            width: 1px;
+        }
+
+        /* ============ SAVE AS MODAL ============ */
+        .save-as-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--overlay-bg);
+            z-index: 400;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .save-as-overlay.show {
+            display: flex;
+        }
+
+        .save-as-dialog {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            max-width: 320px;
+            border: 0.5px solid var(--border-subtle);
+        }
+
+        .save-as-dialog h3 {
+            font-size: 17px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .save-as-dialog input {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 12px;
+            outline: none;
+        }
+
+        .save-as-dialog input:focus {
+            border-color: var(--accent);
+        }
+
+        .save-as-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .save-as-buttons button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .save-as-cancel {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .save-as-confirm {
+            background: var(--accent);
+            color: #ffffff;
+        }
+
+        /* ============ DETAILS MODAL ============ */
+        .details-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--overlay-bg);
+            z-index: 400;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .details-overlay.show {
+            display: flex;
+        }
+
+        .details-dialog {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            max-width: 340px;
+            border: 0.5px solid var(--border-subtle);
+        }
+
+        .details-dialog h3 {
+            font-size: 17px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .details-field {
+            margin-bottom: 12px;
+        }
+
+        .details-field label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .details-field input,
+        .details-field select,
+        .details-field textarea {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .details-field textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .details-field select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='gray'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
+        }
+        
+        [data-bs-theme="dark"] .details-field select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='white'/%3E%3C/svg%3E");
+        }
+
+        .details-field select option {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .details-field input:focus,
+        .details-field select:focus,
+        .details-field textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .details-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 0.5px solid var(--border-subtle);
+        }
+
+        .details-info-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .details-info-value {
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== TOP BAR ==================== -->
+    <div class="top-bar" id="topBar">
+        <button class="top-btn cancel-btn" onclick="goBack()">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="top-right-group">
+            <button class="top-btn save-text" onclick="submitSave()">{% trans "Save" %}</button>
+            <button class="top-btn more-btn" onclick="toggleMoreMenu()">
+                <i class="fas fa-ellipsis-h"></i>
+            </button>
+        </div>
+        
+        <div class="more-menu" id="moreMenu">
+            <div class="more-menu-item" onclick="openSaveAs()">
+                <i class="fas fa-copy"></i>
+                <span>{% trans "Save as copy..." %}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== PHOTO AREA ==================== -->
+    <div class="photo-area" id="photoArea">
+        <form id="editForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="save_as" id="saveAsField" value="">
+            <input type="hidden" name="new_filename" id="newFilenameField" value="">
+            <input type="hidden" name="crop_x" id="cropX" value="0">
+            <input type="hidden" name="crop_y" id="cropY" value="0">
+            <input type="hidden" name="crop_w" id="cropW" value="100">
+            <input type="hidden" name="crop_h" id="cropH" value="100">
+            <input type="hidden" name="brightness" id="hiddenBrightness" value="0">
+            <input type="hidden" name="contrast" id="hiddenContrast" value="0">
+            <input type="hidden" name="saturation" id="hiddenSaturation" value="0">
+            <input type="hidden" name="exposure" id="hiddenExposure" value="0">
+            <input type="hidden" name="blur" id="hiddenBlur" value="0">
+            <input type="hidden" name="hue" id="hiddenHue" value="0">
+            <input type="hidden" name="vibrance" id="hiddenVibrance" value="0">
+            <input type="hidden" name="temperature" id="hiddenTemperature" value="0">
+            <input type="hidden" name="tint" id="hiddenTint" value="0">
+            <input type="hidden" name="sharpness" id="hiddenSharpness" value="0">
+            <input type="hidden" name="rotate" id="hiddenRotate" value="0">
+            <input type="hidden" name="scale" id="hiddenScale" value="100">
+            <input type="hidden" name="vignette" id="hiddenVignette" value="0">
+            <input type="hidden" name="mirror" id="hiddenMirror" value="">
+            <input type="hidden" name="description" id="hiddenDescription" value="{{ photo.description|default:'' }}">
+            <input type="hidden" name="category" id="hiddenCategory" value="{{ photo.category.id|default:'' }}">
+            <input type="hidden" name="category_new" id="hiddenCategoryNew" value="">
+        </form>
+        
+        <img src="{{ photo.image.url }}" 
+             alt="Photo preview"
+             class="preview-image"
+             id="photoPreview">
+    </div>
+
+    <!-- ==================== CROP OVERLAY ==================== -->
+    <div class="crop-overlay" id="cropOverlay">
+        <div class="crop-box" id="cropBox">
+            <div class="crop-grid" id="cropGrid">
+                <div class="crop-grid-line h" style="top: 33.33%;"></div>
+                <div class="crop-grid-line h" style="top: 66.66%;"></div>
+                <div class="crop-grid-line v" style="left: 33.33%;"></div>
+                <div class="crop-grid-line v" style="left: 66.66%;"></div>
+            </div>
+            <div class="crop-handle crop-handle-nw" data-handle="nw"></div>
+            <div class="crop-handle crop-handle-ne" data-handle="ne"></div>
+            <div class="crop-handle crop-handle-sw" data-handle="sw"></div>
+            <div class="crop-handle crop-handle-se" data-handle="se"></div>
+        </div>
+    </div>
+
+    <!-- ==================== BOTTOM PANEL ==================== -->
+    <div class="bottom-panel" id="bottomPanel">
+        <div class="slider-row" id="sliderRow">
+            <input type="range" class="mini-slider" id="activeSlider" 
+                   min="-100" max="100" value="0" 
+                   oninput="onSliderChange()">
+            <span class="slider-value-mini" id="sliderValueMini">0</span>
+        </div>
+
+        <div class="params-scroll" id="adjustmentsContent">
+            <div class="params-row">
+                <button class="param-chip selected" data-slider="brightness" data-min="-100" data-max="100" data-default="0">{% trans "Brightness" %}</button>
+                <button class="param-chip" data-slider="contrast" data-min="-100" data-max="100" data-default="0">{% trans "Contrast" %}</button>
+                <button class="param-chip" data-slider="exposure" data-min="-100" data-max="100" data-default="0">{% trans "Exposure" %}</button>
+                <button class="param-chip" data-slider="saturation" data-min="-100" data-max="100" data-default="0">{% trans "Saturation" %}</button>
+                <button class="param-chip" data-slider="vibrance" data-min="-100" data-max="100" data-default="0">{% trans "Vibrance" %}</button>
+                <button class="param-chip" data-slider="temperature" data-min="-100" data-max="100" data-default="0">{% trans "Temperature" %}</button>
+                <button class="param-chip" data-slider="tint" data-min="-100" data-max="100" data-default="0">{% trans "Tint" %}</button>
+                <button class="param-chip" data-slider="hue" data-min="-180" data-max="180" data-default="0">{% trans "Hue" %}</button>
+                <button class="param-chip" data-slider="sharpness" data-min="-100" data-max="100" data-default="0">{% trans "Sharpness" %}</button>
+                <button class="param-chip" data-slider="blur" data-min="0" data-max="50" data-default="0">{% trans "Blur" %}</button>
+            </div>
+        </div>
+
+        <div class="crop-chips" id="cropContent" style="display: none;">
+            <button class="crop-chip active" onclick="setCropMode('free')">{% trans "Free" %}</button>
+            <button class="crop-chip" onclick="setCropMode('1:1')">1:1</button>
+            <button class="crop-chip" onclick="setCropMode('4:3')">4:3</button>
+            <button class="crop-chip" onclick="setCropMode('16:9')">16:9</button>
+            <button class="crop-chip" onclick="toggleMirror()">{% trans "Mirror" %}</button>
+            <button class="crop-chip" onclick="rotateLeft()"><i class="fas fa-undo"></i> {% trans "Rotate" %}</button>
+            <div class="crop-actions">
+                <button class="crop-action-btn" onclick="cancelCrop()">{% trans "Cancel" %}</button>
+                <button class="crop-action-btn apply" onclick="applyCrop()">{% trans "Apply" %}</button>
+            </div>
+        </div>
+
+        <div class="quick-filters" id="filtersContent" style="display: none;">
+            <button class="quick-filter-chip" onclick="applyQuickFilter('bright')">{% trans "Bright" %}</button>
+            <button class="quick-filter-chip" onclick="applyQuickFilter('warm')">{% trans "Warm" %}</button>
+            <button class="quick-filter-chip" onclick="applyQuickFilter('cool')">{% trans "Cool" %}</button>
+            <button class="quick-filter-chip" onclick="applyQuickFilter('vivid')">{% trans "Vivid" %}</button>
+            <button class="quick-filter-chip" onclick="applyQuickFilter('muted')">{% trans "Muted" %}</button>
+            <button class="quick-filter-chip" onclick="applyQuickFilter('sepia')">{% trans "Sepia" %}</button>
+            <button class="quick-filter-chip" onclick="applyQuickFilter('bw')">{% trans "B&W" %}</button>
+            <button class="quick-filter-chip" onclick="resetChanges()">{% trans "Original" %}</button>
+        </div>
+
+        <div class="tab-row">
+            <button class="tab-btn-small active" onclick="switchTab('adjustments')">{% trans "Adjustments" %}</button>
+            <button class="tab-btn-small" onclick="switchTab('crop')">{% trans "Crop" %}</button>
+            <button class="tab-btn-small" onclick="switchTab('filters')">{% trans "Filters" %}</button>
+            <button class="tab-btn-small" onclick="switchTab('details')">{% trans "Details" %}</button>
+        </div>
+    </div>
+
+    <!-- ==================== SAVE AS MODAL ==================== -->
+    <div class="save-as-overlay" id="saveAsOverlay">
+        <div class="save-as-dialog">
+            <h3>{% trans "Save as copy" %}</h3>
+            <input type="text" id="saveAsInput" placeholder="{% trans 'Enter new filename...' %}" 
+                   autocomplete="off" autocorrect="off">
+            <div class="save-as-buttons">
+                <button class="save-as-cancel" onclick="closeSaveAs()">{% trans "Cancel" %}</button>
+                <button class="save-as-confirm" onclick="confirmSaveAs()">{% trans "Save" %}</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== DETAILS MODAL ==================== -->
+    <div class="details-overlay" id="detailsOverlay">
+        <div class="details-dialog">
+            <h3>{% trans "Photo Details" %}</h3>
+            
+            <div class="details-field">
+                <label>{% trans "Description" %}</label>
+                <input type="text" id="detailsDescription" 
+                       value="{{ photo.description|default:'' }}" 
+                       placeholder="{% trans 'Photo description...' %}">
+            </div>
+            
+            <div class="details-field">
+                <label>{% trans "Category" %}</label>
+                <select id="detailsCategory">
+                    <option value="">-- {% trans "Select category" %} --</option>
+                    {% for cat in photo.user.category_set.all %}
+                    <option value="{{ cat.id }}" {% if photo.category and photo.category.id == cat.id %}selected{% endif %}>
+                        {{ cat.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="details-field">
+                <label>{% trans "Or create new category" %}</label>
+                <input type="text" id="detailsNewCategory" placeholder="{% trans 'New category name...' %}">
+            </div>
+            
+            <div class="details-info-row">
+                <span class="details-info-label">{% trans "Filename" %}</span>
+                <span class="details-info-value" style="font-size: 11px; word-break: break-all; max-width: 180px;">{{ photo.image.name|default:'unknown' }}</span>
+            </div>
+            
+            <div class="details-info-row">
+                <span class="details-info-label">{% trans "Created" %}</span>
+                <span class="details-info-value">{{ photo.created_at|date:"d.m.Y H:i" }}</span>
+            </div>
+            
+            <div style="display: flex; gap: 8px; margin-top: 16px;">
+                <button class="save-as-cancel" onclick="closeDetails()" 
+                        style="flex: 1; padding: 12px; border-radius: 10px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; background: var(--bg-tertiary); color: var(--text-primary);">
+                    {% trans "Cancel" %}
+                </button>
+                <button class="save-as-confirm" onclick="saveDetails()" 
+                        style="flex: 1; padding: 12px; border-radius: 10px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; background: var(--accent); color: #ffffff;">
+                    {% trans "Save" %}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ THEME INIT ============
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        });
+
+        // ============ STATE ============
+        let activeTab = 'adjustments';
+        let activeSliderParam = 'brightness';
+        let mirrorActive = false;
+        let isCropping = false;
+
+        const sliderValues = {
+            brightness: 0, contrast: 0, exposure: 0, saturation: 0,
+            vibrance: 0, temperature: 0, tint: 0, hue: 0,
+            sharpness: 0, blur: 0, rotate: 0, vignette: 0
+        };
+
+        // ============ TOP BAR ============
+        function goBack() {
+            if (confirm(`{% trans "Unsaved changes will be lost. Go back?" %}`)) {
+                window.location.href = '{% url "photo" photo.id %}?t=' + Date.now();
+            }
+        }
+
+        function toggleMoreMenu() {
+            const menu = document.getElementById('moreMenu');
+            menu.classList.toggle('show');
+        }
+
+        function openSaveAs() {
+            document.getElementById('moreMenu').classList.remove('show');
+            document.getElementById('saveAsOverlay').classList.add('show');
+            document.getElementById('saveAsInput').value = '';
+            setTimeout(() => document.getElementById('saveAsInput').focus(), 100);
+        }
+
+        function closeSaveAs() {
+            document.getElementById('saveAsOverlay').classList.remove('show');
+        }
+
+        function confirmSaveAs() {
+            const filename = document.getElementById('saveAsInput').value.trim();
+            if (!filename) {
+                alert(`{% trans "Please enter a filename." %}`);
+                return;
+            }
+            document.getElementById('saveAsField').value = '1';
+            document.getElementById('newFilenameField').value = filename;
+            document.getElementById('saveAsOverlay').classList.remove('show');
+            submitSave();
+        }
+
+        function submitSave() {
+            document.getElementById('hiddenBrightness').value = sliderValues.brightness;
+            document.getElementById('hiddenContrast').value = sliderValues.contrast;
+            document.getElementById('hiddenSaturation').value = sliderValues.saturation;
+            document.getElementById('hiddenExposure').value = sliderValues.exposure;
+            document.getElementById('hiddenBlur').value = sliderValues.blur;
+            document.getElementById('hiddenHue').value = sliderValues.hue;
+            document.getElementById('hiddenVibrance').value = sliderValues.vibrance;
+            document.getElementById('hiddenTemperature').value = sliderValues.temperature;
+            document.getElementById('hiddenTint').value = sliderValues.tint;
+            document.getElementById('hiddenSharpness').value = sliderValues.sharpness;
+            document.getElementById('hiddenRotate').value = sliderValues.rotate;
+            document.getElementById('hiddenScale').value = 100;
+            document.getElementById('hiddenVignette').value = sliderValues.vignette;
+            document.getElementById('hiddenMirror').value = mirrorActive ? '1' : '';
+            document.getElementById('editForm').submit();
+        }
+
+        // ============ TAB SWITCHING ============
+        function switchTab(tabName) {
+            activeTab = tabName;
+            
+            document.querySelectorAll('.tab-btn-small').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.tab-btn-small').classList.add('active');
+            
+            document.getElementById('adjustmentsContent').style.display = tabName === 'adjustments' ? 'block' : 'none';
+            document.getElementById('cropContent').style.display = tabName === 'crop' ? 'flex' : 'none';
+            document.getElementById('filtersContent').style.display = tabName === 'filters' ? 'flex' : 'none';
+            
+            const sliderRow = document.getElementById('sliderRow');
+            sliderRow.style.display = tabName === 'adjustments' ? 'flex' : 'none';
+            
+            if (tabName !== 'crop' && isCropping) {
+                cancelCrop();
+            }
+            
+            if (tabName === 'details') {
+                openDetails();
+            }
+        }
+
+        // ============ DETAILS MODAL ============
+        function openDetails() {
+            document.getElementById('detailsOverlay').classList.add('show');
+        }
+
+        function closeDetails() {
+            document.getElementById('detailsOverlay').classList.remove('show');
+            activeTab = 'adjustments';
+            document.querySelectorAll('.tab-btn-small').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.tab-btn-small[onclick*="adjustments"]').classList.add('active');
+            document.getElementById('adjustmentsContent').style.display = 'block';
+            document.getElementById('cropContent').style.display = 'none';
+            document.getElementById('filtersContent').style.display = 'none';
+            document.getElementById('sliderRow').style.display = 'flex';
+        }
+
+        function saveDetails() {
+            const description = document.getElementById('detailsDescription').value;
+            const category = document.getElementById('detailsCategory').value;
+            const newCategory = document.getElementById('detailsNewCategory').value.trim();
+            
+            document.getElementById('hiddenDescription').value = description;
+            document.getElementById('hiddenCategory').value = category;
+            document.getElementById('hiddenCategoryNew').value = newCategory;
+            
+            document.getElementById('detailsOverlay').classList.remove('show');
+            
+            activeTab = 'adjustments';
+            document.querySelectorAll('.tab-btn-small').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.tab-btn-small[onclick*="adjustments"]').classList.add('active');
+            document.getElementById('adjustmentsContent').style.display = 'block';
+            document.getElementById('cropContent').style.display = 'none';
+            document.getElementById('filtersContent').style.display = 'none';
+            document.getElementById('sliderRow').style.display = 'flex';
+        }
+
+        // ============ PARAMETER CHIPS ============
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.param-chip').forEach(chip => {
+                chip.addEventListener('click', function() {
+                    selectParamChip(this.dataset.slider);
+                });
+            });
+            selectParamChip('brightness');
+            initCropHandlers();
+        });
+
+        function selectParamChip(param) {
+            activeSliderParam = param;
+            
+            document.querySelectorAll('.param-chip').forEach(chip => {
+                chip.classList.remove('selected');
+                if (chip.dataset.slider === param) {
+                    chip.classList.add('selected');
+                    chip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
+            });
+            
+            const chip = document.querySelector(`.param-chip[data-slider="${param}"]`);
+            const min = parseInt(chip.dataset.min);
+            const max = parseInt(chip.dataset.max);
+            const currentValue = sliderValues[param] || 0;
+            
+            const slider = document.getElementById('activeSlider');
+            slider.min = min;
+            slider.max = max;
+            slider.value = currentValue;
+            document.getElementById('sliderValueMini').textContent = currentValue;
+        }
+
+        function onSliderChange() {
+            const value = parseInt(document.getElementById('activeSlider').value);
+            document.getElementById('sliderValueMini').textContent = value;
+            sliderValues[activeSliderParam] = value;
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const img = document.getElementById('photoPreview');
+            const brightness = (sliderValues.brightness / 100) + 1;
+            const contrast = (sliderValues.contrast / 100) + 1;
+            const saturation = (sliderValues.saturation / 100) + 1;
+            const exposure = (sliderValues.exposure / 100) + 1;
+            const vibrance = sliderValues.vibrance / 100;
+            const temperature = sliderValues.temperature;
+            const hue = sliderValues.hue;
+            const blur = sliderValues.blur;
+            const rotate = sliderValues.rotate;
+            const vignette = sliderValues.vignette;
+
+            let tempHue = hue + (temperature * 0.5);
+            let vignetteEffect = vignette > 0 ? `drop-shadow(0 0 ${vignette}px rgba(0,0,0,0.5))` : '';
+
+            let filter = `brightness(${brightness * exposure}) contrast(${contrast}) saturate(${saturation + vibrance}) hue-rotate(${tempHue}deg) blur(${blur}px) ${vignetteEffect}`;
+            let transform = `rotate(${rotate}deg)`;
+            if (mirrorActive) transform += ' scaleX(-1)';
+
+            img.style.filter = filter;
+            img.style.transform = transform;
+            img.style.transformOrigin = 'center';
+        }
+
+        // ============ CROP ============
+        let cropDragMode = null;
+        let cropStartData = {};
+
+        function initCropHandlers() {
+            const overlay = document.getElementById('cropOverlay');
+            const box = document.getElementById('cropBox');
+            
+            box.addEventListener('pointerdown', function(e) {
+                if (!isCropping || e.target.classList.contains('crop-handle')) return;
+                cropDragMode = 'move';
+                cropStartData = {
+                    mouseX: e.clientX,
+                    mouseY: e.clientY,
+                    boxLeft: box.offsetLeft,
+                    boxTop: box.offsetTop
+                };
+                box.setPointerCapture(e.pointerId);
+                e.preventDefault();
+            });
+            
+            document.querySelectorAll('.crop-handle').forEach(handle => {
+                handle.addEventListener('pointerdown', function(e) {
+                    if (!isCropping) return;
+                    cropDragMode = 'resize-' + this.dataset.handle;
+                    cropStartData = {
+                        mouseX: e.clientX,
+                        mouseY: e.clientY,
+                        boxLeft: box.offsetLeft,
+                        boxTop: box.offsetTop,
+                        boxWidth: box.offsetWidth,
+                        boxHeight: box.offsetHeight
+                    };
+                    this.setPointerCapture(e.pointerId);
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+            });
+            
+            window.addEventListener('pointermove', function(e) {
+                if (!cropDragMode || !isCropping) return;
+                
+                const area = document.getElementById('photoArea');
+                const areaRect = area.getBoundingClientRect();
+                const dx = e.clientX - cropStartData.mouseX;
+                const dy = e.clientY - cropStartData.mouseY;
+                
+                if (cropDragMode === 'move') {
+                    let newLeft = cropStartData.boxLeft + dx;
+                    let newTop = cropStartData.boxTop + dy;
+                    
+                    newLeft = Math.max(0, Math.min(newLeft, areaRect.width - box.offsetWidth));
+                    newTop = Math.max(0, Math.min(newTop, areaRect.height - box.offsetHeight));
+                    
+                    box.style.left = newLeft + 'px';
+                    box.style.top = newTop + 'px';
+                } else {
+                    let newL = cropStartData.boxLeft;
+                    let newT = cropStartData.boxTop;
+                    let newW = cropStartData.boxWidth;
+                    let newH = cropStartData.boxHeight;
+                    
+                    if (cropDragMode.includes('e')) newW = cropStartData.boxWidth + dx;
+                    if (cropDragMode.includes('w')) { newW = cropStartData.boxWidth - dx; newL = cropStartData.boxLeft + dx; }
+                    if (cropDragMode.includes('s')) newH = cropStartData.boxHeight + dy;
+                    if (cropDragMode.includes('n')) { newH = cropStartData.boxHeight - dy; newT = cropStartData.boxTop + dy; }
+                    
+                    if (newW < 50) { newW = 50; if (cropDragMode.includes('w')) newL = cropStartData.boxLeft + cropStartData.boxWidth - 50; }
+                    if (newH < 50) { newH = 50; if (cropDragMode.includes('n')) newT = cropStartData.boxTop + cropStartData.boxHeight - 50; }
+                    
+                    newL = Math.max(0, newL);
+                    newT = Math.max(0, newT);
+                    newW = Math.min(newW, areaRect.width - newL);
+                    newH = Math.min(newH, areaRect.height - newT);
+                    
+                    box.style.left = newL + 'px';
+                    box.style.top = newT + 'px';
+                    box.style.width = newW + 'px';
+                    box.style.height = newH + 'px';
+                }
+                
+                updateCropCoords();
+            });
+            
+            window.addEventListener('pointerup', function() {
+                cropDragMode = null;
+            });
+            
+            overlay.addEventListener('pointerdown', function(e) {
+                if (!isCropping || e.target !== overlay) return;
+                
+                const area = document.getElementById('photoArea');
+                const areaRect = area.getBoundingClientRect();
+                const box = document.getElementById('cropBox');
+                
+                let newLeft = e.clientX - areaRect.left - box.offsetWidth / 2;
+                let newTop = e.clientY - areaRect.top - box.offsetHeight / 2;
+                
+                newLeft = Math.max(0, Math.min(newLeft, areaRect.width - box.offsetWidth));
+                newTop = Math.max(0, Math.min(newTop, areaRect.height - box.offsetHeight));
+                
+                box.style.left = newLeft + 'px';
+                box.style.top = newTop + 'px';
+                
+                updateCropCoords();
+            });
+        }
+
+        function setCropMode(mode) {
+            document.querySelectorAll('#cropContent .crop-chip').forEach(chip => chip.classList.remove('active'));
+            event.target.closest('.crop-chip').classList.add('active');
+            startCrop(mode);
+        }
+
+        function startCrop(mode) {
+            isCropping = true;
+            const overlay = document.getElementById('cropOverlay');
+            const box = document.getElementById('cropBox');
+            const img = document.getElementById('photoPreview');
+            const area = document.getElementById('photoArea');
+            const imgRect = img.getBoundingClientRect();
+            const areaRect = area.getBoundingClientRect();
+            
+            overlay.classList.add('active');
+            
+            let boxW, boxH;
+            const maxSize = Math.min(imgRect.width, imgRect.height);
+            const size = maxSize * 0.55;
+            
+            let aspectRatio = null;
+            if (mode === '1:1') aspectRatio = 1;
+            else if (mode === '4:3') aspectRatio = 4/3;
+            else if (mode === '16:9') aspectRatio = 16/9;
+            
+            if (aspectRatio) {
+                boxW = size;
+                boxH = size / aspectRatio;
+                if (boxH > imgRect.height * 0.8) {
+                    boxH = imgRect.height * 0.8;
+                    boxW = boxH * aspectRatio;
+                }
+                if (boxW > imgRect.width * 0.8) {
+                    boxW = imgRect.width * 0.8;
+                    boxH = boxW / aspectRatio;
+                }
+            } else {
+                boxW = size;
+                boxH = size;
+            }
+            
+            const imgLeft = imgRect.left - areaRect.left;
+            const imgTop = imgRect.top - areaRect.top;
+            
+            box.style.left = (imgLeft + (imgRect.width - boxW) / 2) + 'px';
+            box.style.top = (imgTop + (imgRect.height - boxH) / 2) + 'px';
+            box.style.width = boxW + 'px';
+            box.style.height = boxH + 'px';
+            
+            updateCropCoords();
+        }
+
+        function updateCropCoords() {
+            const img = document.getElementById('photoPreview');
+            const box = document.getElementById('cropBox');
+            const area = document.getElementById('photoArea');
+            const imgRect = img.getBoundingClientRect();
+            const areaRect = area.getBoundingClientRect();
+            
+            const boxL = box.offsetLeft;
+            const boxT = box.offsetTop;
+            const boxW = box.offsetWidth;
+            const boxH = box.offsetHeight;
+            
+            const imgLeft = imgRect.left - areaRect.left;
+            const imgTop = imgRect.top - areaRect.top;
+            
+            const x = ((boxL - imgLeft) / imgRect.width) * 100;
+            const y = ((boxT - imgTop) / imgRect.height) * 100;
+            const w = (boxW / imgRect.width) * 100;
+            const h = (boxH / imgRect.height) * 100;
+            
+            document.getElementById('cropX').value = Math.round(Math.max(0, x));
+            document.getElementById('cropY').value = Math.round(Math.max(0, y));
+            document.getElementById('cropW').value = Math.round(Math.min(100, Math.max(1, w)));
+            document.getElementById('cropH').value = Math.round(Math.min(100, Math.max(1, h)));
+        }
+
+        function applyCrop() {
+            updateCropCoords();
+            const cropX = parseFloat(document.getElementById('cropX').value);
+            const cropY = parseFloat(document.getElementById('cropY').value);
+            const cropW = parseFloat(document.getElementById('cropW').value);
+            const cropH = parseFloat(document.getElementById('cropH').value);
+            
+            const img = document.getElementById('photoPreview');
+            img.style.clipPath = `inset(${cropY}% ${100-cropX-cropW}% ${100-cropY-cropH}% ${cropX}%)`;
+            
+            document.getElementById('cropOverlay').classList.remove('active');
+            isCropping = false;
+        }
+
+        function cancelCrop() {
+            document.getElementById('cropOverlay').classList.remove('active');
+            isCropping = false;
+        }
+
+        function toggleMirror() {
+            mirrorActive = !mirrorActive;
+            updatePreview();
+        }
+
+        function rotateLeft() {
+            sliderValues.rotate = (sliderValues.rotate - 90) % 360;
+            document.getElementById('hiddenRotate').value = sliderValues.rotate;
+            updatePreview();
+        }
+
+        // ============ QUICK FILTERS ============
+        function applyQuickFilter(filterName) {
+            resetAllSliders();
+            switch(filterName) {
+                case 'bright': sliderValues.brightness = 30; sliderValues.contrast = 10; break;
+                case 'warm': sliderValues.temperature = 40; sliderValues.saturation = 15; break;
+                case 'cool': sliderValues.temperature = -40; sliderValues.saturation = 10; break;
+                case 'vivid': sliderValues.saturation = 40; sliderValues.contrast = 20; break;
+                case 'muted': sliderValues.saturation = -30; sliderValues.brightness = 10; break;
+                case 'sepia': sliderValues.hue = 30; sliderValues.saturation = 20; sliderValues.brightness = 5; break;
+                case 'bw': sliderValues.saturation = -100; sliderValues.contrast = 15; break;
+            }
+            updatePreview();
+            if (activeTab === 'adjustments') {
+                document.getElementById('activeSlider').value = sliderValues[activeSliderParam] || 0;
+                document.getElementById('sliderValueMini').textContent = sliderValues[activeSliderParam] || 0;
+            }
+        }
+
+        function resetAllSliders() {
+            for (let key in sliderValues) sliderValues[key] = 0;
+        }
+
+        function resetChanges() {
+            resetAllSliders();
+            mirrorActive = false;
+            document.getElementById('photoPreview').style.clipPath = 'none';
+            document.getElementById('photoPreview').style.filter = 'none';
+            document.getElementById('photoPreview').style.transform = 'none';
+            document.getElementById('activeSlider').value = 0;
+            document.getElementById('sliderValueMini').textContent = '0';
+            cancelCrop();
+        }
+
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('moreMenu');
+            if (menu.classList.contains('show') && !e.target.closest('.more-btn') && !e.target.closest('.more-menu')) {
+                menu.classList.remove('show');
+            }
+        });
+
+        updatePreview();
+    </script>
+</body>
+</html>

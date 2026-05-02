@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load i18n %}
+    <title>{% trans "Gallery" %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
+    <style>
+
+
+        
+    select option {
+        background-color: #ffffff;
+        color: #212529;
+    }
+
+    
+    [data-bs-theme="dark"] select option {
+        background-color: #1a1a1a;
+        color: #ffffff;
+    }
+    
+    body {
+        background: #fffff0;
+        background-attachment: fixed;
+        min-height: 100vh;
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+    
+    
+    [data-bs-theme="dark"] body {
+        background: #000000;
+        color: #ffffff;
+    }
+    
+    [data-bs-theme="dark"] .card {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    [data-bs-theme="dark"] .card-header {
+        background-color: rgba(255, 255, 255, 0.08);
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+    }
+    
+    [data-bs-theme="dark"] .list-group-item {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+    
+    [data-bs-theme="dark"] .category-link {
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    [data-bs-theme="dark"] .category-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+    }
+    
+    [data-bs-theme="dark"] .category-link.active {
+        background-color: rgba(13, 110, 253, 0.2);
+        border-left: 3px solid #0d6efd;
+        color: #ffffff;
+    }
+    
+    [data-bs-theme="dark"] .text-muted {
+        color: rgba(255, 255, 255, 0.5) !important;
+    }
+    
+    [data-bs-theme="dark"] h1 {
+        color: #ffffff;
+    }
+    
+    [data-bs-theme="dark"] .search-panel {
+        background: rgba(0, 0, 0, 0.95);
+        border-color: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+    }
+    
+    [data-bs-theme="dark"] .search-panel-close {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    [data-bs-theme="dark"] .search-panel-close:hover {
+        color: #ffffff;
+    }
+    
+    [data-bs-theme="dark"] .search-input-group input {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+    }
+    
+    [data-bs-theme="dark"] .search-input-group input::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+    
+    [data-bs-theme="dark"] .search-input-group input:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    
+    [data-bs-theme="dark"] .date-type-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+    }
+    
+    [data-bs-theme="dark"] .date-type-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+    
+    [data-bs-theme="dark"] .date-type-btn.active {
+        background: #0d6efd;
+        border-color: #0d6efd;
+        color: #ffffff;
+    }
+    
+    [data-bs-theme="dark"] .date-inputs input {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+    }
+    
+    [data-bs-theme="dark"] .date-inputs input:focus {
+        border-color: #0d6efd;
+    }
+    
+    [data-bs-theme="dark"] .search-btn-text {
+        color: #ffffff;
+    }
+    
+    [data-bs-theme="dark"] .search-btn-text.clear-btn {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    [data-bs-theme="dark"] .dropdown-menu {
+        background: rgba(0, 0, 0, 0.95);
+        border-color: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+    }
+    
+    [data-bs-theme="dark"] .dropdown-item {
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    [data-bs-theme="dark"] .dropdown-item:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #ffffff;
+    }
+    
+    [data-bs-theme="dark"] .size-dropdown-menu {
+        background: rgba(0, 0, 0, 0.95);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    [data-bs-theme="dark"] .size-dropdown-menu .dropdown-item {
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    [data-bs-theme="dark"] .size-dropdown-menu .dropdown-item:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #ffffff;
+    }
+    
+    [data-bs-theme="dark"] .size-dropdown-menu .dropdown-item.active {
+        background: rgba(13, 110, 253, 0.2);
+    }
+    
+    [data-bs-theme="dark"] .icon-btn {
+        color: #ffffff;
+    }
+    
+    [data-bs-theme="dark"] .icon-btn:hover {
+        color: #ffffff;
+        opacity: 0.7;
+    }
+    
+    [data-bs-theme="dark"] .search-toggle-btn {
+        color: #ffffff;
+    }
+    
+    [data-bs-theme="dark"] .search-toggle-btn:hover,
+    [data-bs-theme="dark"] .search-toggle-btn.active {
+        color: #ffffff;
+        opacity: 0.7;
+    }
+    
+    [data-bs-theme="dark"] .dots-btn {
+        background: rgba(255, 255, 255, 0.2);
+    }
+    
+    [data-bs-theme="dark"] .dots-btn:hover {
+        background: rgba(255, 255, 255, 0.4);
+    }
+    
+    [data-bs-theme="dark"] .photo-item,
+    [data-bs-theme="dark"] .photo-card {
+        background: #1a1a1a;
+    }
+    
+    [data-bs-theme="dark"] .empty-state {
+        color: rgba(255, 255, 255, 0.5);
+    }
+    
+    
+    [data-bs-theme="dark"] .flatpickr-calendar {
+        background: #1a1a1a;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    [data-bs-theme="dark"] .flatpickr-day {
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    [data-bs-theme="dark"] .flatpickr-day:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    [data-bs-theme="dark"] .flatpickr-day.today {
+        border-color: #0d6efd;
+    }
+    
+    [data-bs-theme="dark"] .flatpickr-day.selected {
+        background: #0d6efd;
+        color: #ffffff;
+    }
+    
+    [data-bs-theme="dark"] .flatpickr-months .flatpickr-month,
+    [data-bs-theme="dark"] .flatpickr-current-month .flatpickr-monthDropdown-months,
+    [data-bs-theme="dark"] span.flatpickr-weekday {
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    [data-bs-theme="dark"] .flatpickr-day.flatpickr-disabled,
+    [data-bs-theme="dark"] .flatpickr-day.flatpickr-disabled:hover {
+        color: rgba(255, 255, 255, 0.2);
+    }
+    
+    [data-bs-theme="dark"] .card-footer {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-top-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    [data-bs-theme="dark"] .form-label {
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    [data-bs-theme="dark"] .form-control,
+    [data-bs-theme="dark"] .form-select {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+    }
+    
+    [data-bs-theme="dark"] .form-control:focus,
+    [data-bs-theme="dark"] .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    
+    
+    
+    .image-thumbnail {
+        height: 200px;
+        object-fit: cover;
+        width: 100%;
+    }
+    
+    .dropdown-toggle::after {
+        display: none !important;
+    }
+    
+    .dots-btn {
+        background: rgba(0, 0, 0, 0.4);
+        border: none;
+        font-size: 20px;
+        line-height: 1;
+        padding: 2px 8px;
+        cursor: pointer;
+        color: #fff;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+    }
+    
+    .dots-btn:hover,
+    .dots-btn:focus {
+        background: rgba(0, 0, 0, 0.6);
+        color: #fff;
+    }
+    
+    .dropdown-menu {
+        min-width: auto;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 4px 0;
+    }
+    
+    .dropdown-item {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 14px;
+        padding: 6px 16px;
+        transition: background 0.2s ease;
+    }
+    
+    .dropdown-item:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+    }
+    
+    .dropdown-item.text-danger {
+        color: #ff6b6b !important;
+    }
+    
+    .dropdown-item.text-danger:hover {
+        background: rgba(255, 107, 107, 0.2);
+        color: #ff4444 !important;
+    }
+    
+    .photo-image-wrapper {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .photo-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 15px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        pointer-events: none;
+        overflow: hidden;
+        word-wrap: break-word;
+    }
+    
+    .photo-image-wrapper:hover .photo-overlay {
+        opacity: 1;
+    }
+    
+    .photo-overlay p {
+        margin-bottom: 4px;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 14px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    .photo-overlay .photo-description {
+        font-weight: 500;
+        color: #fff;
+        white-space: normal;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.3;
+        max-height: 2.6em;
+    }
+    
+    .photo-actions {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 10;
+    }
+    
+    .photo-image-wrapper:hover .photo-actions {
+        opacity: 1;
+    }
+    
+    .photo-card .card-body {
+        display: none;
+    }
+    
+    .photo-link {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    .photo-link:hover {
+        color: inherit;
+    }
+    
+    .category-link {
+        color: #212529;
+        text-decoration: none;
+        display: block;
+        padding: 8px 16px;
+        transition: color 0.2s ease, background-color 0.2s ease;
+        border-radius: 0px;
+    }
+    
+    .category-link:hover {
+        color: #6c757d;
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+    
+    .category-link.active {
+        color: #212529;
+        font-weight: 500;
+        background-color: rgba(0, 0, 0, 0.1);
+        border-left: 3px solid #6c757d;
+    }
+    
+    .list-group-item {
+        padding: 0;
+        border: none;
+    }
+    
+    .list-group-item:not(:last-child) {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+    
+    .card-header {
+        border-radius: 0px;
+    }
+    
+    .card {
+        border-radius: 0px;
+    }
+    
+    .icon-btn {
+        background: none;
+        border: none;
+        color: #212529;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 0;
+        line-height: 1;
+        transition: color 0.2s, opacity 0.2s;
+        display: flex;
+        align-items: center;
+    }
+    
+    .icon-btn:hover {
+        color: #000;
+        opacity: 0.7;
+    }
+    
+    .search-toggle-btn {
+        background: none;
+        border: none;
+        color: #212529;
+        width: auto;
+        height: auto;
+        border-radius: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: color 0.2s, opacity 0.2s;
+        font-size: 20px;
+        padding: 0;
+    }
+    
+    .search-toggle-btn:hover,
+    .search-toggle-btn.active {
+        color: #000;
+        opacity: 0.7;
+    }
+    
+    .search-panel-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .search-panel {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-top: 15px;
+        background: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 12px;
+        padding: 28px 24px 20px;
+        width: 420px;
+        max-width: 90vw;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        z-index: 1050;
+        display: none;
+    }
+    
+    .search-panel.open {
+        display: block;
+    }
+    
+    .search-panel-close {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        background: none;
+        border: none;
+        font-size: 16px;
+        color: #6c757d;
+        cursor: pointer;
+        padding: 4px;
+        line-height: 1;
+        transition: color 0.2s;
+        z-index: 2;
+    }
+    
+    .search-panel-close:hover {
+        color: #212529;
+    }
+    
+    .search-input-group {
+        margin-bottom: 14px;
+    }
+    
+    .search-input-group input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: border-color 0.2s;
+    }
+    
+    .search-input-group input:focus {
+        outline: none;
+        border-color: #6c757d;
+        box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.15);
+    }
+    
+    .date-type-group {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 14px;
+    }
+    
+    .date-type-btn {
+        flex: 1;
+        padding: 8px;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        color: #495057;
+        font-size: 13px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.2s;
+    }
+    
+    .date-type-btn:hover {
+        background: #e9ecef;
+    }
+    
+    .date-type-btn.active {
+        background: #6c757d;
+        color: white;
+        border-color: #6c757d;
+    }
+    
+    .date-inputs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 14px;
+    }
+    
+    .date-inputs.single {
+        display: flex;
+    }
+    
+    .date-inputs.hidden {
+        display: none;
+    }
+    
+    .date-inputs input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        font-size: 13px;
+    }
+    
+    .date-inputs input:focus {
+        outline: none;
+        border-color: #6c757d;
+        box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.15);
+    }
+    
+    .search-actions {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+    }
+    
+    .search-btn-text {
+        background: none;
+        border: none;
+        padding: 6px 0;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 14px;
+        color: #212529;
+        transition: opacity 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .search-btn-text:hover {
+        opacity: 0.7;
+    }
+    
+    .search-btn-text.clear-btn {
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    .size-dropdown-menu {
+        min-width: 160px;
+        background: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        padding: 8px 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .size-dropdown-menu .dropdown-item {
+        color: #212529;
+        font-size: 14px;
+        padding: 8px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .size-dropdown-menu .dropdown-item:hover {
+        background-color: #f8f9fa;
+        color: #212529;
+    }
+    
+    .size-dropdown-menu .dropdown-item.active {
+        background-color: #e9ecef;
+        font-weight: 500;
+    }
+    
+    .size-dropdown-menu .dropdown-item .size-info {
+        font-size: 11px;
+        color: #6c757d;
+        margin-left: 10px;
+    }
+    
+    .gallery-row {
+        margin-right: 0;
+        margin-left: 0;
+    }
+    
+    [class*="gallery-size-"] .photo-card {
+        margin-bottom: 0;
+    }
+    
+    
+    .gallery-size-xsmall .col-md-4 {
+        flex: 0 0 auto;
+        width: 16.66666667%;
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+    
+    .gallery-size-xsmall .photo-card {
+        margin-bottom: 4px;
+        border-radius: 0;
+    }
+    
+    .gallery-size-xsmall .card {
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+    }
+    
+    .gallery-size-xsmall .image-thumbnail {
+        height: 120px;
+    }
+    
+    .gallery-size-xsmall .photo-overlay {
+        padding: 4px;
+    }
+    
+    .gallery-size-xsmall .photo-overlay p {
+        font-size: 8px;
+        margin-bottom: 1px;
+        line-height: 1.2;
+    }
+    
+    .gallery-size-xsmall .photo-overlay .photo-description {
+        font-size: 9px;
+        line-height: 1.2;
+        -webkit-line-clamp: 1;
+        max-height: 1.2em;
+    }
+    
+    
+    .gallery-size-small .col-md-4 {
+        flex: 0 0 auto;
+        width: 25%;
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+    
+    .gallery-size-small .photo-card {
+        margin-bottom: 8px;
+    }
+    
+    .gallery-size-small .image-thumbnail {
+        height: 150px;
+    }
+    
+    .gallery-size-small .photo-overlay {
+        padding: 8px;
+    }
+    
+    .gallery-size-small .photo-overlay p {
+        font-size: 10px;
+        margin-bottom: 2px;
+    }
+    
+    .gallery-size-small .photo-overlay .photo-description {
+        font-size: 11px;
+        line-height: 1.3;
+        -webkit-line-clamp: 2;
+        max-height: 2.6em;
+    }
+    
+    
+    .gallery-size-medium .col-md-4 {
+        flex: 0 0 auto;
+        width: 33.33333333%;
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+    
+    .gallery-size-medium .photo-card {
+        margin-bottom: 16px;
+    }
+    
+    .gallery-size-medium .image-thumbnail {
+        height: 180px;
+    }
+    
+    .gallery-size-medium .photo-overlay {
+        padding: 12px;
+    }
+    
+    .gallery-size-medium .photo-overlay p {
+        font-size: 12px;
+        margin-bottom: 3px;
+    }
+    
+    .gallery-size-medium .photo-overlay .photo-description {
+        font-size: 13px;
+        line-height: 1.3;
+        -webkit-line-clamp: 2;
+        max-height: 2.6em;
+    }
+    
+    
+    .gallery-size-large .col-md-4 {
+        flex: 0 0 auto;
+        width: 50%;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+    
+    .gallery-size-large .photo-card {
+        margin-bottom: 24px;
+    }
+    
+    .gallery-size-large .image-thumbnail {
+        height: 220px;
+    }
+    
+    .gallery-size-large .photo-overlay {
+        padding: 15px;
+    }
+    
+    .gallery-size-large .photo-overlay p {
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+    
+    .gallery-size-large .photo-overlay .photo-description {
+        font-size: 15px;
+        line-height: 1.4;
+        -webkit-line-clamp: 3;
+        max-height: 4.2em;
+    }
+    
+    
+    @media (max-width: 768px) {
+        .search-panel {
+            width: 340px;
+            padding: 24px 16px 16px;
+            left: auto;
+            right: 0;
+            transform: none;
+        }
+        
+        .gallery-size-xsmall .col-md-4 {
+            width: 25%;
+            padding-left: 1px;
+            padding-right: 1px;
+        }
+        
+        .gallery-size-xsmall .photo-card {
+            margin-bottom: 2px;
+        }
+        
+        .gallery-size-xsmall .photo-overlay {
+            padding: 3px;
+        }
+        
+        .gallery-size-xsmall .photo-overlay p {
+            font-size: 7px;
+            margin-bottom: 1px;
+        }
+        
+        .gallery-size-xsmall .photo-overlay .photo-description {
+            font-size: 8px;
+            -webkit-line-clamp: 1;
+            max-height: 1em;
+        }
+        
+        .gallery-size-xsmall .dots-btn {
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+        }
+        
+        .gallery-size-xsmall .photo-actions {
+            top: 5px;
+            right: 5px;
+        }
+        
+        .gallery-size-small .col-md-4 {
+            width: 33.33333333%;
+            padding-left: 3px;
+            padding-right: 3px;
+        }
+        
+        .gallery-size-small .photo-card {
+            margin-bottom: 6px;
+        }
+        
+        .gallery-size-small .photo-overlay {
+            padding: 6px;
+        }
+        
+        .gallery-size-small .photo-overlay p {
+            font-size: 9px;
+        }
+        
+        .gallery-size-small .photo-overlay .photo-description {
+            font-size: 10px;
+        }
+        
+        .gallery-size-medium .col-md-4 {
+            width: 50%;
+            padding-left: 6px;
+            padding-right: 6px;
+        }
+        
+        .gallery-size-medium .photo-card {
+            margin-bottom: 12px;
+        }
+        
+        .gallery-size-medium .photo-overlay {
+            padding: 8px;
+        }
+        
+        .gallery-size-medium .photo-overlay p {
+            font-size: 10px;
+        }
+        
+        .gallery-size-medium .photo-overlay .photo-description {
+            font-size: 11px;
+        }
+        
+        .gallery-size-large .col-md-4 {
+            width: 50%;
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+        
+        .gallery-size-large .photo-card {
+            margin-bottom: 16px;
+        }
+        
+        .gallery-size-large .photo-overlay {
+            padding: 10px;
+        }
+        
+        .gallery-size-large .photo-overlay p {
+            font-size: 11px;
+        }
+        
+        .gallery-size-large .photo-overlay .photo-description {
+            font-size: 12px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .search-panel {
+            width: 300px;
+            padding: 20px 12px 12px;
+        }
+        
+        .gallery-size-xsmall .col-md-4 {
+            width: 33.33333333%;
+            padding-left: 1px;
+            padding-right: 1px;
+        }
+        
+        .gallery-size-xsmall .photo-overlay {
+            padding: 2px;
+        }
+        
+        .gallery-size-xsmall .photo-overlay p {
+            font-size: 6px;
+        }
+        
+        .gallery-size-xsmall .photo-overlay .photo-description {
+            font-size: 7px;
+        }
+        
+        .gallery-size-xsmall .photo-overlay p:nth-child(2) {
+            display: none;
+        }
+        
+        .gallery-size-small .col-md-4 {
+            width: 50%;
+            padding-left: 3px;
+            padding-right: 3px;
+        }
+    }
+    </style>
+</head>
+<body class="m-5">
+    <div class="container">
+        
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h1 class="mb-0">My Gallery</h1>
+            <div class="d-flex align-items-center gap-3">
+                
+                <div class="search-panel-wrapper">
+                    <div class="d-flex flex-column align-items-center">
+                        <button class="search-toggle-btn {% if search_query or date_from or date_to or single_date %}active{% endif %}" id="searchToggleBtn" title="{% trans 'Search' %}">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="search-panel {% if search_query or date_from or date_to or single_date %}open{% endif %}" id="searchPanel">
+                        <button class="search-panel-close" id="searchPanelClose" title="{% trans 'Close' %}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <form method="get" action="{% url 'gallery' %}" id="searchForm">
+                            {% if request.GET.category %}
+                                <input type="hidden" name="category" value="{{ request.GET.category }}">
+                            {% endif %}
+                            
+                            <div class="search-input-group">
+                                <input type="text" name="search" placeholder="{% trans ' Search by description...' %}" value="{{ search_query }}" autocomplete="off">
+                            </div>
+                            
+                            <div class="date-type-group">
+                                <button type="button" class="date-type-btn {% if not date_from and not date_to or date_from and not date_to %}active{% endif %}" data-date-type="after"> {% trans "After" %}</button>
+                                <button type="button" class="date-type-btn {% if date_to and not date_from %}active{% endif %}" data-date-type="before"> {% trans "Before" %}</button>
+                                <button type="button" class="date-type-btn {% if date_from and date_to %}active{% endif %}" data-date-type="between"> {% trans "Between" %}</button>
+                            </div>
+                            
+                            <div class="date-inputs single {% if date_from and date_to %}hidden{% endif %}" id="singleDateInput">
+                                <input type="text" id="singleDate" name="single_date" placeholder="{% trans 'Select date' %}" value="{{ single_date|default:date_from|default:date_to }}" autocomplete="off">
+                            </div>
+                            
+                            <div class="date-inputs {% if not date_from or not date_to %}hidden{% endif %}" id="rangeDateInput">
+                                <input type="text" id="dateFrom" name="date_from" placeholder="{% trans 'From date' %}" value="{{ date_from }}" autocomplete="off">
+                                <input type="text" id="dateTo" name="date_to" placeholder="{% trans 'To date' %}" value="{{ date_to }}" autocomplete="off">
+                            </div>
+                            
+                            <div class="search-actions">
+                                <button type="submit" class="search-btn-text">
+                                    <i class="fas fa-search"></i> {% trans "Search" %}
+                                </button>
+                                <button type="button" id="clearSearchBtn" class="search-btn-text clear-btn">
+                                    <i class="fas fa-times"></i> {% trans "Clear" %}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                
+                <form action="{% url 'set_language' %}" method="post" id="lang-form" class="d-inline">
+                    {% csrf_token %}
+                    <input name="next" type="hidden" value="{{ redirect_to }}" />
+                    <select name="language" onchange="document.getElementById('lang-form').submit();" class="form-select form-select-sm" style="border: none; background: none; color: inherit;">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% get_available_languages as LANGUAGES %}
+                        {% get_language_info_list for LANGUAGES as languages %}
+                        {% for language in languages %}
+                            <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
+                                {{ language.name_local }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+                
+                
+                <button class="icon-btn" id="themeToggle" title="{% trans 'Toggle theme' %}">
+                    <i class="fas fa-moon"></i>
+                </button>
+                
+                
+                <div class="dropdown">
+                    <button class="icon-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Grid size">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-grid" viewBox="0 0 16 16">
+                            <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z"/>
+                        </svg>
+                    </button>
+                    <ul class="dropdown-menu size-dropdown-menu">
+                        <li><a class="dropdown-item size-option" href="#" data-size="xsmall">
+                            XSmall
+                            <span class="size-info">6 cols</span>
+                        </a></li>
+                        <li><a class="dropdown-item size-option" href="#" data-size="small">
+                            Small
+                            <span class="size-info">4 cols</span>
+                        </a></li>
+                        <li><a class="dropdown-item size-option" href="#" data-size="medium">
+                            Medium
+                            <span class="size-info">3 cols</span>
+                        </a></li>
+                        <li><a class="dropdown-item size-option active" href="#" data-size="large">
+                            Large
+                            <span class="size-info">2 cols</span>
+                        </a></li>
+                    </ul>
+                </div>
+                
+                <a href="{% url 'upload' %}" class="btn btn-primary btn-sm">{% trans "Upload" %}</a>
+                
+                <form method="post" action="{% url 'logout' %}" class="mb-0">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary btn-sm">{% trans "Logout" %}</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <div class="card">
+                    <div class="card-header">
+                        <strong>{% trans "Categories" %}</strong>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <a href="{% url 'gallery' %}" class="category-link {% if not request.GET.category %}active{% endif %}">{% trans "All" %}</a>
+                        </li>
+                        {% for category in categories %}
+                            <li class="list-group-item">
+                                <a href="{% url 'gallery' %}?category={{ category.name }}" class="category-link {% if request.GET.category == category.name %}active{% endif %}">{{ category.name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                <div class="text-muted mb-3" style="font-size: 12px;">
+                    <span id="photoCount">{{ photos|length }}</span> photo(s)
+                    <span id="sizeInfo" class="ms-2"></span>
+                </div>
+                
+                <div id="galleryContainer" class="gallery-size-large">
+                    <div class="row g-0 gallery-row">
+                        {% for photo in photos %}
+                            <div class="col-md-4">
+                                <div class="card photo-card">
+                                    <div class="photo-image-wrapper">
+                                        <a href="{% url 'photo' photo.id %}" class="photo-link">
+                                            <img class="image-thumbnail" src="{{ photo.image.url }}" alt="Photo">
+                                        </a>
+                                        
+                                        <div class="photo-overlay">
+                                            <p class="photo-description">
+                                                {% if photo.description %}{{ photo.description }}{% else %}{% trans "No description" %}{% endif %}
+                                            </p>
+                                            <p>{% trans "Category" %}: {% if photo.category %}{{ photo.category.name }}{% else %}{% trans "None" %}{% endif %}</p>
+                                            <p>{% trans "Uploaded" %}: {{ photo.created_at|date:"M d, Y H:i" }}</p>
+                                        </div>
+                                        
+                                        <div class="photo-actions">
+                                            <div class="dropdown d-inline-block">
+                                                <button class="dots-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    ⋯
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    <li><a class="dropdown-item" href="{% url 'edit' photo.id %}">Edit</a></li>
+                                                    <li>
+                                                        <form method="post" action="{% url 'delete' photo.id %}" style="margin: 0;" onsubmit="return confirm('Are you sure you want to delete this photo?');">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="dropdown-item text-danger">Delete</button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="col-12">
+                                <h3>No photos yet.</h3>
+                                <p>Use the Upload button to add your first image.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    
+    <script>
+    
+    (function() {
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-bs-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+        
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = html.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-bs-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+        
+        function updateThemeIcon(theme) {
+            const icon = themeToggle.querySelector('i');
+            if (theme === 'dark') {
+                icon.className = 'fas fa-sun';
+                themeToggle.title = 'Switch to light theme';
+            } else {
+                icon.className = 'fas fa-moon';
+                themeToggle.title = 'Switch to dark theme';
+            }
+        }
+    })();
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const galleryContainer = document.getElementById('galleryContainer');
+        const sizeOptions = document.querySelectorAll('.size-option');
+        const sizeInfo = document.getElementById('sizeInfo');
+        
+        function getColumnsInfo(size) {
+            const info = {
+                xsmall: { desktop: 6, mobile: 4, verySmall: 3 },
+                small: { desktop: 4, mobile: 3, verySmall: 2 },
+                medium: { desktop: 3, mobile: 2, verySmall: 2 },
+                large: { desktop: 2, mobile: 2, verySmall: 2 }
+            };
+            
+            const width = window.innerWidth;
+            let columns;
+            
+            if (width <= 480) {
+                columns = info[size].verySmall;
+            } else if (width <= 768) {
+                columns = info[size].mobile;
+            } else {
+                columns = info[size].desktop;
+            }
+            
+            return columns;
+        }
+        
+        function getSpacingInfo(size) {
+            const spacing = {
+                xsmall: { desktop: '2px', mobile: '1px' },
+                small: { desktop: '4px', mobile: '3px' },
+                medium: { desktop: '8px', mobile: '6px' },
+                large: { desktop: '12px', mobile: '8px' }
+            };
+            
+            const width = window.innerWidth;
+            return width <= 768 ? spacing[size].mobile : spacing[size].desktop;
+        }
+        
+        function setGallerySize(size) {
+            galleryContainer.classList.remove('gallery-size-xsmall', 'gallery-size-small', 'gallery-size-medium', 'gallery-size-large');
+            galleryContainer.classList.add(`gallery-size-${size}`);
+            
+            sizeOptions.forEach(opt => {
+                if (opt.getAttribute('data-size') === size) {
+                    opt.classList.add('active');
+                } else {
+                    opt.classList.remove('active');
+                }
+            });
+            
+            updateSizeInfo(size);
+            localStorage.setItem('gallerySize', size);
+        }
+        
+        function updateSizeInfo(size) {
+            const columns = getColumnsInfo(size);
+            const gap = getSpacingInfo(size);
+            sizeInfo.textContent = `| ${columns} cols, gap: ${gap}`;
+        }
+        
+        let resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function() {
+                const currentSize = localStorage.getItem('gallerySize') || 'large';
+                updateSizeInfo(currentSize);
+            }, 250);
+        });
+        
+        sizeOptions.forEach(option => {
+            option.addEventListener('click', function(e) {
+                e.preventDefault();
+                const size = this.getAttribute('data-size');
+                setGallerySize(size);
+            });
+        });
+        
+        const savedSize = localStorage.getItem('gallerySize');
+        if (savedSize && ['xsmall', 'small', 'medium', 'large'].includes(savedSize)) {
+            setGallerySize(savedSize);
+        } else {
+            setGallerySize('large');
+        }
+        
+        galleryContainer.style.transition = 'all 0.3s ease';
+        
+        
+        const searchPanel = document.getElementById('searchPanel');
+        const searchToggleBtn = document.getElementById('searchToggleBtn');
+        const searchPanelClose = document.getElementById('searchPanelClose');
+        const searchForm = document.getElementById('searchForm');
+        const clearSearchBtn = document.getElementById('clearSearchBtn');
+        
+        const dateTypeBtns = document.querySelectorAll('.date-type-btn');
+        const singleDateInput = document.getElementById('singleDateInput');
+        const rangeDateInput = document.getElementById('rangeDateInput');
+        const singleDate = document.getElementById('singleDate');
+        const dateFrom = document.getElementById('dateFrom');
+        const dateTo = document.getElementById('dateTo');
+        
+        let currentDateType = 'after';
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('date_from') && urlParams.has('date_to')) {
+            currentDateType = 'between';
+        } else if (urlParams.has('date_to') && !urlParams.has('date_from')) {
+            currentDateType = 'before';
+        } else {
+            currentDateType = 'after';
+        }
+        
+        function setDateType(type) {
+            currentDateType = type;
+            
+            dateTypeBtns.forEach(btn => {
+                if (btn.dataset.dateType === type) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            if (type === 'between') {
+                singleDateInput.classList.add('hidden');
+                rangeDateInput.classList.remove('hidden');
+                if (singleDate) singleDate.value = '';
+            } else {
+                singleDateInput.classList.remove('hidden');
+                rangeDateInput.classList.add('hidden');
+                if (dateFrom) dateFrom.value = '';
+                if (dateTo) dateTo.value = '';
+            }
+        }
+        
+        dateTypeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                setDateType(btn.dataset.dateType);
+            });
+        });
+        
+        if (singleDate) {
+            flatpickr(singleDate, {
+                dateFormat: "Y-m-d",
+                maxDate: new Date(),
+                allowInput: true,
+                onChange: function(selectedDates, dateStr) {
+                    const oldAfter = document.querySelector('input[name="date_after"]');
+                    const oldBefore = document.querySelector('input[name="date_before"]');
+                    if (oldAfter) oldAfter.remove();
+                    if (oldBefore) oldBefore.remove();
+                    
+                    if (currentDateType === 'after') {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'date_after';
+                        input.value = dateStr;
+                        searchForm.appendChild(input);
+                    } else if (currentDateType === 'before') {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'date_before';
+                        input.value = dateStr;
+                        searchForm.appendChild(input);
+                    }
+                }
+            });
+        }
+        
+        if (dateFrom) {
+            flatpickr(dateFrom, {
+                dateFormat: "Y-m-d",
+                maxDate: new Date(),
+                allowInput: true
+            });
+        }
+        
+        if (dateTo) {
+            flatpickr(dateTo, {
+                dateFormat: "Y-m-d",
+                maxDate: new Date(),
+                allowInput: true
+            });
+        }
+        
+        if (searchToggleBtn) {
+            searchToggleBtn.addEventListener('click', () => {
+                searchPanel.classList.toggle('open');
+                searchToggleBtn.classList.toggle('active');
+            });
+        }
+        
+        if (searchPanelClose) {
+            searchPanelClose.addEventListener('click', () => {
+                searchPanel.classList.remove('open');
+                searchToggleBtn.classList.remove('active');
+            });
+        }
+        
+        document.addEventListener('click', function(e) {
+            if (!searchPanel.contains(e.target) && e.target !== searchToggleBtn && !searchToggleBtn.contains(e.target)) {
+                searchPanel.classList.remove('open');
+                searchToggleBtn.classList.remove('active');
+            }
+        });
+        
+        searchForm.addEventListener('submit', (e) => {
+            const dateAfter = document.querySelector('input[name="date_after"]');
+            const dateBefore = document.querySelector('input[name="date_before"]');
+            
+            if (currentDateType === 'after' && dateAfter) {
+                dateAfter.name = 'date_from';
+                const oldTo = document.querySelector('input[name="date_to"]');
+                if (oldTo) oldTo.remove();
+            } else if (currentDateType === 'before' && dateBefore) {
+                dateBefore.name = 'date_to';
+                const oldFrom = document.querySelector('input[name="date_from"]');
+                if (oldFrom) oldFrom.remove();
+            } else if (currentDateType === 'between') {
+                if (dateAfter) dateAfter.remove();
+                if (dateBefore) dateBefore.remove();
+            }
+        });
+        
+        if (clearSearchBtn) {
+            clearSearchBtn.addEventListener('click', () => {
+                const inputs = searchForm.querySelectorAll('input[name="search"], input[name="single_date"], input[name="date_from"], input[name="date_to"], input[name="date_after"], input[name="date_before"]');
+                inputs.forEach(input => {
+                    input.value = '';
+                });
+                
+                const extraInputs = document.querySelectorAll('input[name="date_after"], input[name="date_before"]');
+                extraInputs.forEach(input => input.remove());
+                
+                const category = new URLSearchParams(window.location.search).get('category');
+                let url = window.location.pathname;
+                if (category) {
+                    url += `?category=${category}`;
+                }
+                window.location.href = url;
+            });
+        }
+        
+        setDateType(currentDateType);
+    });
+    </script>
+</body>
+</html>

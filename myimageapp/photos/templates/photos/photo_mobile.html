@@ -1,0 +1,311 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}">
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>{% trans "Photo View - Mobile" %}</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme ? savedTheme : (systemPrefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-bs-theme', theme);
+        })();
+    </script>
+
+    <style>
+        :root {
+            
+            --bg-main: #fffff0;
+            --panel-bg: rgba(255, 255, 240, 0.85);
+            --text-main: #212529;
+            --text-muted: rgba(0, 0, 0, 0.6);
+            --btn-bg: rgba(0, 0, 0, 0.05);
+            --btn-bg-active: rgba(0, 0, 0, 0.15);
+            --border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-bs-theme="dark"] {
+            
+            --bg-main: #000000;
+            --panel-bg: rgba(0, 0, 0, 0.85);
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --btn-bg: rgba(255, 255, 255, 0.1);
+            --btn-bg-active: rgba(255, 255, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background: var(--bg-main);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        
+        .top-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 100;
+            padding: 12px 16px;
+            padding-top: max(12px, env(safe-area-inset-top));
+            transition: transform 0.3s ease, background 0.3s ease;
+            border-bottom: 0.5px solid var(--border-color);
+        }
+        
+        .top-panel.hidden {
+            transform: translateY(-100%);
+        }
+        
+        .top-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .back-btn {
+            background: var(--btn-bg);
+            border: none;
+            color: var(--text-main);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+        
+        .back-btn:active {
+            background: var(--btn-bg-active);
+            transform: scale(0.95);
+        }
+        
+        .photo-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .photo-title {
+            color: var(--text-main);
+            font-size: 16px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin: 0;
+            line-height: 1.2;
+        }
+        
+        .photo-date {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin: 0;
+            line-height: 1.3;
+        }
+        
+        
+        .photo-main {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+        
+        .photo-image {
+            max-width: 100vw;
+            max-height: 100vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            transition: opacity 0.2s;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        
+        .bottom-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 100;
+            padding: 12px 16px;
+            padding-bottom: max(30px, calc(env(safe-area-inset-bottom) + 20px));
+            transition: transform 0.3s ease, background 0.3s ease;
+            border-top: 0.5px solid var(--border-color);
+        }
+        
+        .bottom-panel.hidden {
+            transform: translateY(100%);
+        }
+        
+        .bottom-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            gap: 20px;
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 20px;
+            position: relative;
+        }
+        
+        .action-btn:active {
+            background: var(--btn-bg-active);
+            transform: scale(0.95);
+        }
+        
+        .action-btn.active {
+            color: #ff4757;
+        }
+        
+        .btn-label {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="top-panel" id="topPanel">
+        <div class="top-content">
+            <a href="{% url 'gallery_mobile' %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="photo-info">
+                <h2 class="photo-title">
+                    {% if photo.description %}
+                        {{ photo.description }}
+                    {% else %}
+                        {% trans "Photo" %}
+                    {% endif %}
+                </h2>
+                <p class="photo-date">{{ photo.created_at|date:"M d, Y H:i" }}</p>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="photo-main" id="photoMain">
+        <img src="{{ photo.image.url }}" 
+             alt="{% if photo.description %}{{ photo.description }}{% else %}{% trans 'Photo' %}{% endif %}"
+             class="photo-image"
+             id="mainImage">
+    </div>
+    
+    
+    <div class="bottom-panel" id="bottomPanel">
+        <div class="bottom-actions">
+            
+            <button class="action-btn" id="editBtn" onclick="location.href='{% url 'edit_mobile' photo.id %}'">
+                <i class="fas fa-pen"></i>
+                <span class="btn-label">{% trans "Edit" %}</span>
+            </button>
+            
+            
+            <button class="action-btn" id="favoriteBtn" onclick="toggleFavorite()">
+                <i class="far fa-heart"></i>
+                <span class="btn-label">{% trans "Favorite" %}</span>
+            </button>
+            
+            
+            <button class="action-btn" id="deleteBtn" onclick="location.href='{% url 'delete_mobile' photo.id %}'">
+                <i class="fas fa-trash"></i>
+                <span class="btn-label">{% trans "Delete" %}</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const topPanel = document.getElementById('topPanel');
+        const bottomPanel = document.getElementById('bottomPanel');
+        const mainImage = document.getElementById('mainImage');
+        let panelsVisible = true;
+        
+        
+        function togglePanels() {
+            panelsVisible = !panelsVisible;
+            if (panelsVisible) {
+                topPanel.classList.remove('hidden');
+                bottomPanel.classList.remove('hidden');
+            } else {
+                topPanel.classList.add('hidden');
+                bottomPanel.classList.add('hidden');
+            }
+        }
+        
+        
+        mainImage.addEventListener('click', (e) => {
+            e.stopPropagation();
+            togglePanels();
+        });
+        
+        
+        mainImage.style.opacity = '0';
+        mainImage.onload = () => {
+            mainImage.style.transition = 'opacity 0.3s';
+            mainImage.style.opacity = '1';
+        };
+        if (mainImage.complete) {
+            mainImage.style.opacity = '1';
+        }
+        
+        
+        function toggleFavorite() {
+            alert('{% trans "Favorites feature coming soon!" %}');
+        }
+    </script>
+</body>
+</html>
