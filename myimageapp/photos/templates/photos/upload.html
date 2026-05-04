@@ -1,3 +1,9 @@
+<!--
+    Photo Upload Page - Desktop Version
+    Provides form interface for uploading new photos with description,
+    category selection, and ability to create new categories.
+    Includes theme toggle and language selection.
+-->
 <!DOCTYPE html>
 <html data-bs-theme="light">
 <head>
@@ -6,40 +12,59 @@
     {% load i18n %}
     <title>{% trans "Upload Photo" %}</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
+    
+    <!-- Bootstrap 5.3.8 CSS with integrity check for security -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" 
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <!-- Font Awesome 6.4.0 for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        
+        /* Base body with smooth theme transition */
         body {
             background: #f8f9fa;
             transition: background 0.3s ease, color 0.3s ease;
         }
         
+        /* 
+         * DARK THEME STYLES
+         * Override Bootstrap defaults for dark appearance
+         * Uses rgba colors for subtle transparency effects
+         */
         
+        /* Pure black background for dark mode */
         [data-bs-theme="dark"] body {
             background: #000000;
             color: #ffffff;
         }
         
+        /* Card with subtle transparency on dark background */
         [data-bs-theme="dark"] .card {
             background-color: rgba(255, 255, 255, 0.05);
             border-color: rgba(255, 255, 255, 0.1);
         }
         
+        /* Card header with slightly lighter background for visual separation */
         [data-bs-theme="dark"] .card-header {
             background-color: rgba(255, 255, 255, 0.08);
             border-bottom-color: rgba(255, 255, 255, 0.1);
         }
         
+        /* Ensure header text is visible */
         [data-bs-theme="dark"] .card-header h3 {
             color: #ffffff;
         }
         
+        /* Form labels with reduced opacity for visual hierarchy */
         [data-bs-theme="dark"] .form-label {
             color: rgba(255, 255, 255, 0.8);
         }
         
+        /* 
+         * Form inputs styling for dark mode
+         * Semi-transparent background with border
+         * White text for readability
+         */
         [data-bs-theme="dark"] .form-control,
         [data-bs-theme="dark"] .form-select {
             background: rgba(255, 255, 255, 0.1);
@@ -47,6 +72,7 @@
             color: #ffffff;
         }
         
+        /* Focus state with Bootstrap primary blue glow */
         [data-bs-theme="dark"] .form-control:focus,
         [data-bs-theme="dark"] .form-select:focus {
             background: rgba(255, 255, 255, 0.15);
@@ -55,26 +81,37 @@
             box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
         }
         
+        /* Placeholder text with muted appearance */
         [data-bs-theme="dark"] .form-control::placeholder {
             color: rgba(255, 255, 255, 0.5);
         }
         
-        
+        /* 
+         * Select dropdown options styling
+         * Desktop browsers need explicit option styling
+         * Dark background prevents white flash when dropdown opens
+         */
         [data-bs-theme="dark"] select option {
             background: #1a1a2e;
             color: #ffffff;
         }
         
+        /* Redundant selector for specificity in some browsers */
         [data-bs-theme="dark"] select.form-select option {
             background: #1a1a2e;
             color: #ffffff;
         }
         
-        
+        /* File input text color fix for dark mode */
         [data-bs-theme="dark"] input[type="file"] {
             color: #ffffff;
         }
         
+        /* 
+         * Custom file upload button styling
+         * ::file-selector-button pseudo-element targets the "Choose File" button
+         * Styled to match dark theme aesthetic
+         */
         [data-bs-theme="dark"] input[type="file"]::file-selector-button {
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.2);
@@ -88,7 +125,7 @@
             background: rgba(255, 255, 255, 0.2);
         }
         
-        
+        /* Textarea specific dark mode styles */
         [data-bs-theme="dark"] textarea.form-control {
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.2);
@@ -100,6 +137,7 @@
             border-color: #0d6efd;
         }
         
+        /* Dark button with outline style for better dark theme integration */
         [data-bs-theme="dark"] .btn-dark {
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.2);
@@ -112,7 +150,11 @@
             color: #ffffff;
         }
         
-        
+        /* 
+         * Theme toggle button - minimal design
+         * Positioned in top-right corner
+         * Flex display for icon alignment
+         */
         .theme-toggle-btn {
             background: none;
             border: none;
@@ -129,6 +171,7 @@
             opacity: 0.7;
         }
         
+        /* Theme toggle light color in dark mode */
         [data-bs-theme="dark"] .theme-toggle-btn {
             color: #ffffff;
         }
@@ -136,10 +179,23 @@
 </head>
 <body class="m-5">
     <div class="container">
+        <!-- 
+            Top-right control bar
+            Contains theme toggle and language switcher
+            Flex layout aligns items horizontally
+        -->
         <div class="d-flex justify-content-end mb-3 align-items-center gap-3">
+            <!-- Theme toggle button with icon -->
             <button class="theme-toggle-btn" id="themeToggle" title="{% trans 'Toggle theme' %}">
                 <i class="fas fa-moon"></i>
             </button>
+            
+            <!-- 
+                Language selection form
+                Auto-submits on change for immediate language switch
+                CSRF protection included
+                hidden 'next' input preserves current URL after language change
+            -->
             <form action="{% url 'set_language' %}" method="post" id="lang-form" class="d-inline">
                 {% csrf_token %}
                 <input name="next" type="hidden" value="{{ redirect_to }}" />
@@ -155,32 +211,59 @@
                 </select>
             </form>
         </div>
+        
+        <!-- Centered form column (6/12 on medium screens and up) -->
         <div class="row justify-content-center">
             <div class="col-md-6">
+                <!-- Back navigation button -->
                 <a href="{% url 'gallery' %}" class="btn btn-dark mb-3">{% trans "Back to Gallery" %}</a>
+                
+                <!-- Upload form card -->
                 <div class="card">
                     <div class="card-header">
                         <h3>{% trans "Upload Photo" %}</h3>
                     </div>
                     <div class="card-body">
+                        <!-- 
+                            Photo upload form
+                            enctype="multipart/form-data" required for file uploads
+                            CSRF token for security
+                        -->
                         <form method="POST" enctype="multipart/form-data">
                             {% csrf_token %}
+                            
+                            <!-- Image file input rendered from Django form -->
                             <div class="form-group mb-3">
                                 <label for="id_image" class="form-label">{% trans "Image" %}</label>
                                 {{ form.image }}
                             </div>
+                            
+                            <!-- Description text input -->
                             <div class="form-group mb-3">
                                 <label for="id_description" class="form-label">{% trans "Description" %}</label>
                                 {{ form.description }}
                             </div>
+                            
+                            <!-- 
+                                Category select dropdown 
+                                Shows existing categories from database
+                            -->
                             <div class="form-group mb-3">
                                 <label for="id_category" class="form-label">{% trans "Category" %}</label>
                                 {{ form.category }}
                             </div>
+                            
+                            <!-- 
+                                New category text input
+                                Allows creating a new category if existing ones don't match
+                                Alternative to selecting from dropdown
+                            -->
                             <div class="form-group mb-3">
                                 <label for="id_category_new" class="form-label">{% trans "Or create new category" %}</label>
                                 {{ form.category_new }}
                             </div>
+                            
+                            <!-- Submit button spans full width of form -->
                             <button type="submit" class="btn btn-primary w-100">{% trans "Upload" %}</button>
                         </form>
                     </div>
@@ -190,24 +273,36 @@
     </div>
 
     <script>
-        
+        /*
+         * THEME MANAGEMENT
+         * IIFE (Immediately Invoked Function Expression) to avoid global scope pollution
+         * Handles theme persistence and toggle functionality
+         */
         (function() {
             const themeToggle = document.getElementById('themeToggle');
             const html = document.documentElement;
             
+            // Load saved theme preference or default to light
             const savedTheme = localStorage.getItem('theme') || 'light';
             html.setAttribute('data-bs-theme', savedTheme);
             updateThemeIcon(savedTheme);
             
+            // Toggle between light and dark on button click
             themeToggle.addEventListener('click', function() {
                 const currentTheme = html.getAttribute('data-bs-theme');
                 const newTheme = currentTheme === 'light' ? 'dark' : 'light';
                 
+                // Apply new theme and save preference
                 html.setAttribute('data-bs-theme', newTheme);
                 localStorage.setItem('theme', newTheme);
                 updateThemeIcon(newTheme);
             });
             
+            /*
+             * Update toggle button icon based on current theme
+             * Sun icon for dark mode (indicating "switch to light")
+             * Moon icon for light mode (indicating "switch to dark")
+             */
             function updateThemeIcon(theme) {
                 const icon = themeToggle.querySelector('i');
                 if (theme === 'dark') {

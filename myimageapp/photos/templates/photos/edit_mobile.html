@@ -4,6 +4,7 @@
     quick filters, and bottom sheet UI pattern.
     Uses CSS custom properties for instant theme switching.
     Designed for mobile browsers with safe area support.
+    NOTE: All image filtering is done server-side via preview endpoint.
 -->
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
@@ -820,6 +821,12 @@
             <input type="hidden" name="scale" id="hiddenScale" value="100">
             <input type="hidden" name="vignette" id="hiddenVignette" value="0">
             <input type="hidden" name="mirror" id="hiddenMirror" value="">
+            <input type="hidden" name="highlights" id="hiddenHighlights" value="0">
+            <input type="hidden" name="shadows" id="hiddenShadows" value="0">
+            <input type="hidden" name="clarity" id="hiddenClarity" value="0">
+            <input type="hidden" name="noise" id="hiddenNoise" value="0">
+            <input type="hidden" name="texture" id="hiddenTexture" value="0">
+            <input type="hidden" name="straighten" id="hiddenStraighten" value="0">
             
             <!-- Metadata fields for description and category -->
             <input type="hidden" name="description" id="hiddenDescription" value="{{ photo.description|default:'' }}">
@@ -830,6 +837,7 @@
         <!-- 
             Photo preview image
             pointer-events: none set via CSS allows crop overlay to receive touch events
+            Server-rendered preview is loaded by changing the src attribute
         -->
         <img src="{{ photo.image.url }}" 
              alt="Photo preview"
@@ -874,19 +882,31 @@
             <span class="slider-value-mini" id="sliderValueMini">0</span>
         </div>
 
-        <!-- ADJUSTMENTS TAB: Scrollable parameter chips -->
+        <!-- ADJUSTMENTS TAB: Scrollable parameter chips (grouped by category) -->
         <div class="params-scroll" id="adjustmentsContent">
             <div class="params-row">
+                <!-- Core adjustments -->
                 <button class="param-chip selected" data-slider="brightness" data-min="-100" data-max="100" data-default="0">{% trans "Brightness" %}</button>
                 <button class="param-chip" data-slider="contrast" data-min="-100" data-max="100" data-default="0">{% trans "Contrast" %}</button>
                 <button class="param-chip" data-slider="exposure" data-min="-100" data-max="100" data-default="0">{% trans "Exposure" %}</button>
+                <button class="param-chip" data-slider="highlights" data-min="-100" data-max="100" data-default="0">{% trans "Highlights" %}</button>
+                <button class="param-chip" data-slider="shadows" data-min="-100" data-max="100" data-default="0">{% trans "Shadows" %}</button>
+                <!-- Color controls -->
                 <button class="param-chip" data-slider="saturation" data-min="-100" data-max="100" data-default="0">{% trans "Saturation" %}</button>
                 <button class="param-chip" data-slider="vibrance" data-min="-100" data-max="100" data-default="0">{% trans "Vibrance" %}</button>
                 <button class="param-chip" data-slider="temperature" data-min="-100" data-max="100" data-default="0">{% trans "Temperature" %}</button>
                 <button class="param-chip" data-slider="tint" data-min="-100" data-max="100" data-default="0">{% trans "Tint" %}</button>
                 <button class="param-chip" data-slider="hue" data-min="-180" data-max="180" data-default="0">{% trans "Hue" %}</button>
+                <!-- Detail & sharpness -->
                 <button class="param-chip" data-slider="sharpness" data-min="-100" data-max="100" data-default="0">{% trans "Sharpness" %}</button>
+                <button class="param-chip" data-slider="clarity" data-min="-100" data-max="100" data-default="0">{% trans "Clarity" %}</button>
+                <button class="param-chip" data-slider="texture" data-min="-100" data-max="100" data-default="0">{% trans "Texture" %}</button>
+                <button class="param-chip" data-slider="noise" data-min="0" data-max="100" data-default="0">{% trans "Noise Reduction" %}</button>
+                <!-- Effects -->
                 <button class="param-chip" data-slider="blur" data-min="0" data-max="50" data-default="0">{% trans "Blur" %}</button>
+                <button class="param-chip" data-slider="vignette" data-min="-100" data-max="100" data-default="0">{% trans "Vignette" %}</button>
+                <!-- Geometry -->
+                <button class="param-chip" data-slider="straighten" data-min="-10" data-max="10" data-default="0">{% trans "Straighten" %}</button>
             </div>
         </div>
 
@@ -1020,10 +1040,13 @@
         let mirrorActive = false;
         let isCropping = false;
 
+        // Extended slider values matching desktop version
         const sliderValues = {
             brightness: 0, contrast: 0, exposure: 0, saturation: 0,
             vibrance: 0, temperature: 0, tint: 0, hue: 0,
-            sharpness: 0, blur: 0, rotate: 0, vignette: 0
+            sharpness: 0, blur: 0, rotate: 0, vignette: 0,
+            highlights: 0, shadows: 0, clarity: 0, noise: 0,
+            texture: 0, straighten: 0
         };
 
         // ============ TOP BAR FUNCTIONS ============
@@ -1076,6 +1099,7 @@
          * Submits form for server-side processing
          */
         function submitSave() {
+            // Sync all slider values to hidden fields
             document.getElementById('hiddenBrightness').value = sliderValues.brightness;
             document.getElementById('hiddenContrast').value = sliderValues.contrast;
             document.getElementById('hiddenSaturation').value = sliderValues.saturation;
@@ -1090,6 +1114,12 @@
             document.getElementById('hiddenScale').value = 100;
             document.getElementById('hiddenVignette').value = sliderValues.vignette;
             document.getElementById('hiddenMirror').value = mirrorActive ? '1' : '';
+            document.getElementById('hiddenHighlights').value = sliderValues.highlights;
+            document.getElementById('hiddenShadows').value = sliderValues.shadows;
+            document.getElementById('hiddenClarity').value = sliderValues.clarity;
+            document.getElementById('hiddenNoise').value = sliderValues.noise;
+            document.getElementById('hiddenTexture').value = sliderValues.texture;
+            document.getElementById('hiddenStraighten').value = sliderValues.straighten;
             document.getElementById('editForm').submit();
         }
 
@@ -1224,41 +1254,59 @@
             updatePreview();
         }
 
+        // ============ SERVER-SIDE PREVIEW ============
+        let previewTimer = null;
+
         /*
-         * Real-time CSS-based preview
-         * Applies filters and transforms directly to the image element
-         * Much faster than server roundtrip for mobile
-         * Combines multiple adjustments into single filter string
+         * Server-side preview update
+         * Sends all adjustment parameters to server preview endpoint
+         * Uses debouncing (150ms delay) to avoid excessive requests on mobile
+         * Changes image src to server-rendered preview URL
+         * Appends cache-busting timestamp to prevent browser caching
          */
         function updatePreview() {
-            const img = document.getElementById('photoPreview');
-            
-            // Convert slider values to CSS filter parameters
-            const brightness = (sliderValues.brightness / 100) + 1;
-            const contrast = (sliderValues.contrast / 100) + 1;
-            const saturation = (sliderValues.saturation / 100) + 1;
-            const exposure = (sliderValues.exposure / 100) + 1;
-            const vibrance = sliderValues.vibrance / 100;
-            const temperature = sliderValues.temperature;
-            const hue = sliderValues.hue;
-            const blur = sliderValues.blur;
-            const rotate = sliderValues.rotate;
-            const vignette = sliderValues.vignette;
-
-            // Temperature affects hue (simplified mapping)
-            let tempHue = hue + (temperature * 0.5);
-            let vignetteEffect = vignette > 0 ? `drop-shadow(0 0 ${vignette}px rgba(0,0,0,0.5))` : '';
-
-            // Build CSS filter string
-            let filter = `brightness(${brightness * exposure}) contrast(${contrast}) saturate(${saturation + vibrance}) hue-rotate(${tempHue}deg) blur(${blur}px) ${vignetteEffect}`;
-            
-            // Build transform string
-            let transform = `rotate(${rotate}deg)`;
-            if (mirrorActive) transform += ' scaleX(-1)';
-
-            img.style.filter = filter;
-            img.style.transform = transform;
-            img.style.transformOrigin = 'center';
+            if (previewTimer) clearTimeout(previewTimer);
+            previewTimer = setTimeout(() => {
+                const params = new URLSearchParams();
+                
+                // Build query string from all slider values (matching desktop version)
+                params.append('brightness', sliderValues.brightness);
+                params.append('contrast', sliderValues.contrast);
+                params.append('saturation', sliderValues.saturation);
+                params.append('exposure', sliderValues.exposure);
+                params.append('blur', sliderValues.blur);
+                params.append('hue', sliderValues.hue);
+                params.append('vibrance', sliderValues.vibrance);
+                params.append('temperature', sliderValues.temperature);
+                params.append('tint', sliderValues.tint);
+                params.append('sharpness', sliderValues.sharpness);
+                params.append('rotate', sliderValues.rotate);
+                params.append('scale', 100);
+                params.append('vignette', sliderValues.vignette);
+                params.append('mirror', mirrorActive ? '1' : '');
+                params.append('highlights', sliderValues.highlights);
+                params.append('shadows', sliderValues.shadows);
+                params.append('clarity', sliderValues.clarity);
+                params.append('noise', sliderValues.noise);
+                params.append('texture', sliderValues.texture);
+                params.append('straighten', sliderValues.straighten);
+                
+                // Include crop coordinates if applied
+                params.append('crop_x', document.getElementById('cropX').value);
+                params.append('crop_y', document.getElementById('cropY').value);
+                params.append('crop_w', document.getElementById('cropW').value);
+                params.append('crop_h', document.getElementById('cropH').value);
+                
+                // Build preview URL with all parameters
+                const url = '/edit/{{ photo.id }}/preview/?' + params.toString();
+                // Cache-busting timestamp prevents browser from serving cached image
+                const timestamp = new Date().getTime();
+                const urlWithTimestamp = url + '&_t=' + timestamp;
+                
+                // Update image source to trigger server request
+                const img = document.getElementById('photoPreview');
+                img.src = urlWithTimestamp;
+            }, 150);
         }
 
         // ============ CROP SYSTEM ============
@@ -1480,20 +1528,14 @@
             document.getElementById('cropH').value = Math.round(Math.min(100, Math.max(1, h)));
         }
 
-        /* Apply crop using CSS clip-path for visual feedback */
+        /* Apply crop - saves coordinates and refreshes server-side preview */
         function applyCrop() {
             updateCropCoords();
-            const cropX = parseFloat(document.getElementById('cropX').value);
-            const cropY = parseFloat(document.getElementById('cropY').value);
-            const cropW = parseFloat(document.getElementById('cropW').value);
-            const cropH = parseFloat(document.getElementById('cropH').value);
-            
-            const img = document.getElementById('photoPreview');
-            // inset() values: top right bottom left
-            img.style.clipPath = `inset(${cropY}% ${100-cropX-cropW}% ${100-cropY-cropH}% ${cropX}%)`;
-            
+            // Remove visual overlay, crop will be rendered by server
             document.getElementById('cropOverlay').classList.remove('active');
             isCropping = false;
+            // Trigger server-side preview with new crop coordinates
+            updatePreview();
         }
 
         function cancelCrop() {
@@ -1516,8 +1558,9 @@
 
         // ============ QUICK FILTERS ============
         /*
-         * Apply preset filter values
+         * Apply preset filter values via server
          * Resets all sliders first, then applies filter-specific values
+         * Triggers server-side preview after setting values
          */
         function applyQuickFilter(filterName) {
             resetAllSliders();
@@ -1530,27 +1573,32 @@
                 case 'sepia': sliderValues.hue = 30; sliderValues.saturation = 20; sliderValues.brightness = 5; break;
                 case 'bw': sliderValues.saturation = -100; sliderValues.contrast = 15; break;
             }
-            updatePreview();
             // Update slider if on adjustments tab
             if (activeTab === 'adjustments') {
                 document.getElementById('activeSlider').value = sliderValues[activeSliderParam] || 0;
                 document.getElementById('sliderValueMini').textContent = sliderValues[activeSliderParam] || 0;
             }
+            // Trigger server-side preview with filter values
+            updatePreview();
         }
 
         function resetAllSliders() {
             for (let key in sliderValues) sliderValues[key] = 0;
         }
 
-        /* Full reset to original image */
+        /* Full reset to original image - reloads original source */
         function resetChanges() {
             resetAllSliders();
             mirrorActive = false;
-            document.getElementById('photoPreview').style.clipPath = 'none';
-            document.getElementById('photoPreview').style.filter = 'none';
-            document.getElementById('photoPreview').style.transform = 'none';
+            // Reset to original image by loading the unmodified URL
+            document.getElementById('photoPreview').src = '{{ photo.image.url }}';
             document.getElementById('activeSlider').value = 0;
             document.getElementById('sliderValueMini').textContent = '0';
+            // Reset crop coordinates
+            document.getElementById('cropX').value = 0;
+            document.getElementById('cropY').value = 0;
+            document.getElementById('cropW').value = 100;
+            document.getElementById('cropH').value = 100;
             cancelCrop();
         }
 
