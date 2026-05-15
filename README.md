@@ -173,7 +173,7 @@ Django View читає ці параметри через `request.GET.get('sear
 
 ### Preview система
 
-**Desktop (server-side):**
+**Desktop and Mobile (server-side):**
 - `updatePreview()` викликається при зміні будь-якого слайдера
 - Використовує debounce 150ms через `setTimeout`/`clearTimeout`
 - Формує URLSearchParams з усіма параметрами (brightness, contrast, crop_x, etc.)
@@ -181,18 +181,6 @@ Django View читає ці параметри через `request.GET.get('sear
 - Встановлює `previewImg.src = url` — браузер завантажує нове зображення з сервера
 - Сервер генерує зображення через Pillow і повертає JPEG
 
-**Mobile (client-side):**
-- `updatePreview()` застосовує CSS фільтри безпосередньо до `<img>` елемента
-- Конвертує значення слайдерів у CSS filter рядок:
-  - `brightness(${value})` — значення + 1 (бо 0 = нормальна яскравість)
-  - `contrast(${value})`
-  - `saturate(${value})`
-  - `hue-rotate(${degrees}deg)`
-  - `blur(${px}px)`
-  - `drop-shadow()` для віньєтки
-- Temperature впливає на hue-rotate: `hue + (temperature * 0.5)`
-- Mirror реалізується через `transform: scaleX(-1)`
-- Минає сервер, результат миттєвий, але обмежений можливостями CSS
 
 ### Система слайдерів (edit.html)
 
