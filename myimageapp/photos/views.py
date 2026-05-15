@@ -6,6 +6,7 @@ from django.core.files.base import ContentFile
 from django.contrib import messages
 from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth import login
 # from django.utils.translation import gettext as _
 from PIL import Image, ImageFilter, ImageEnhance
 import numpy as np
@@ -354,8 +355,10 @@ def signup(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('photos_login')
+            user = form.save()  # Зберігаємо користувача і отримуємо його об'єкт
+            login(request, user)  # Автоматично входимо в акаунт
+            messages.success(request, _('Registration successful! Welcome!'))  # Опціонально: повідомлення
+            return redirect('gallery')  # Перенаправляємо одразу в галерею
     else:
         form = UserCreationForm()
 
@@ -794,7 +797,7 @@ def previewPhoto(request, pk):
     
     img = process_image(photo, params)
     
-    buffer = io.BytesIO()
+    buffer = io.BytesIO() # creating a temp virtual buffer to store photo
     if img.mode in ('RGBA', 'P'):
         img = img.convert('RGB')
     
@@ -817,7 +820,7 @@ def deletePhoto(request, pk):
     photo = get_object_or_404(Photo, id=pk, user=request.user)
     
     device_info = detect_mobile_device(request)
-    force_mobile = request.GET.get('mobile') == '1'
+    force_mobile = request.GET.get('mobile') == '1' # true or false
     force_desktop = request.GET.get('desktop') == '1'
     
     if force_mobile:

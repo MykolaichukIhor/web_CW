@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'photos.middleware.DeviceDetectionMiddleware', # Не забудьте замінити your_app на назву вашого додатку!
+    'photos.middleware.DeviceDetectionMiddleware', 
 ]
 
 ROOT_URLCONF = 'myimageapp.urls'
@@ -138,6 +138,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_REDIRECT_URL = '/gallery/'
 LOGOUT_REDIRECT_URL = '/login/'
 
+LOGIN_URL = '//login/'
+
 STATICFILES_DIRS = [
     
     BASE_DIR / 'static'
@@ -146,3 +148,9 @@ STATICFILES_DIRS = [
 
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Дозволяємо Django приймати POST-запити (форми логіну) з  адреси ngrok
+CSRF_TRUSTED_ORIGINS = [
+    'https://perch-joyfully-royal.ngrok-free.dev', 
+    'https://*.ngrok-free.dev', # mask for the future
+]

@@ -355,11 +355,7 @@ msgstr "Будь ласка, введіть ім'я файлу."
 msgid "Photo Details"
 msgstr "Деталі фото"
 
-#: .\photos\templates\photos\edit_mobile.html:804
-#, fuzzy
-#| msgid " Search by description..."
-msgid "Photo description..."
-msgstr " Пошук за описом..."
+
 
 #: .\photos\templates\photos\edit_mobile.html:810
 #, fuzzy
@@ -456,11 +452,7 @@ msgstr "Вийти"
 msgid "My Gallery"
 msgstr "Моя Галерея"
 
-#: .\photos\templates\photos\gallery_mobile.html:660
-#, fuzzy
-#| msgid " Search by description..."
-msgid "Search by description..."
-msgstr " Пошук за описом..."
+
 
 #: .\photos\templates\photos\gallery_mobile.html:694
 msgid "Name"
@@ -518,7 +510,7 @@ msgstr "Видалити"
 
 #: .\photos\templates\photos\gallery_mobile.html:739
 msgid "No photos found."
-msgstr ""
+msgstr "Фото немає"
 
 #: .\photos\templates\photos\gallery_mobile.html:740
 msgid "Try different search criteria"
@@ -691,6 +683,21 @@ msgstr "Фото \"{}\" успішно видалено!"
 #~ msgstr "Увійдіть тут"
 
 
-msgid "Favorite"
+
+#~ msgid "Take Photo"
+#~ msgstr "Зробити фото"
+
+#~ msgid "Choose from Gallery"
+#~ msgstr "Обрати з галереї"
+
+
+#~ msgid "Add New Photo"
+#~ msgstr "Додати нове фото"
+
+
+
+
+
+
 
 
