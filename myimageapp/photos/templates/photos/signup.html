@@ -162,6 +162,44 @@
         [data-bs-theme="dark"] .char-counter.danger {
             color: #dc3545;
         }
+        
+        /* Password strength indicator */
+        .password-strength {
+            font-size: 11px;
+            margin-top: 4px;
+        }
+        
+        .strength-weak {
+            color: #dc3545;
+        }
+        
+        .strength-fair {
+            color: #ffc107;
+        }
+        
+        .strength-good {
+            color: #17a2b8;
+        }
+        
+        .strength-strong {
+            color: #28a745;
+        }
+        
+        [data-bs-theme="dark"] .strength-weak {
+            color: #ff6b6b;
+        }
+        
+        [data-bs-theme="dark"] .strength-fair {
+            color: #ffc107;
+        }
+        
+        [data-bs-theme="dark"] .strength-good {
+            color: #5bc0de;
+        }
+        
+        [data-bs-theme="dark"] .strength-strong {
+            color: #5cb85c;
+        }
     </style>
 </head>
 <body class="m-5">
@@ -215,6 +253,11 @@
                                         </div>
                                     {% endif %}
                                     
+                                    <!-- Password strength indicator -->
+                                    {% if field.name == 'password1' %}
+                                        <div class="password-strength" id="password-strength"></div>
+                                    {% endif %}
+                                    
                                     <!-- Additional validation error container -->
                                     <div class="error-message" id="error-{{ field.name }}"></div>
                                     
@@ -262,9 +305,17 @@
                 passwordRequired: "{% trans 'Password is required' %}",
                 passwordMinLength: "{% trans 'Password must be at least 8 characters long' %}",
                 passwordMismatch: "{% trans 'Passwords do not match' %}",
+                passwordEnglishOnly: "{% trans 'Password can only contain English letters (A-Z, a-z), numbers (0-9), and special characters (!@#$%^&*). Please use Latin characters only.' %}",
+                passwordInvalidChars: "{% trans 'Password contains invalid characters. Use only English letters, numbers, and standard special characters.' %}",
+                
+                // Password strength messages
+                passwordStrengthWeak: "{% trans 'Weak password' %}",
+                passwordStrengthFair: "{% trans 'Fair password' %}",
+                passwordStrengthGood: "{% trans 'Good password' %}",
+                passwordStrengthStrong: "{% trans 'Strong password' %}",
                 
                 // Form submission messages
-                fixErrors: "{% trans 'Please fix the errors above before submitting. Username must use only English letters and be max 30 characters.' %}"
+                fixErrors: "{% trans 'Please fix the errors above before submitting. Username and password must use only English characters.' %}"
             };
             
             // ==========================================
@@ -337,6 +388,78 @@
                         counterDiv.classList.add('warning');
                     }
                 }
+            }
+            
+            // ==========================================
+            // PASSWORD VALIDATION (English characters only)
+            // ==========================================
+            
+            // Check if password contains only allowed characters (English letters, numbers, special chars)
+            function isValidPassword(password) {
+                // Allowed: a-z, A-Z, 0-9, and common special characters
+                const passwordRegex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/;
+                return passwordRegex.test(password);
+            }
+            
+            // Check if password contains non-English characters
+            function hasNonEnglishInPassword(password) {
+                const nonEnglishRegex = /[^\x00-\x7F]/;
+                return nonEnglishRegex.test(password);
+            }
+            
+            // Calculate password strength
+            function getPasswordStrength(password) {
+                let strength = 0;
+                
+                if (password.length >= 8) strength++;
+                if (password.length >= 12) strength++;
+                if (/[a-z]/.test(password)) strength++;
+                if (/[A-Z]/.test(password)) strength++;
+                if (/[0-9]/.test(password)) strength++;
+                if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) strength++;
+                
+                if (strength <= 2) return 'weak';
+                if (strength <= 4) return 'fair';
+                if (strength <= 5) return 'good';
+                return 'strong';
+            }
+            
+            // Update password strength indicator
+            function updatePasswordStrength(password) {
+                const strengthDiv = document.getElementById('password-strength');
+                if (!strengthDiv) return;
+                
+                if (password.length === 0) {
+                    strengthDiv.innerHTML = '';
+                    strengthDiv.className = 'password-strength';
+                    return;
+                }
+                
+                const strength = getPasswordStrength(password);
+                let strengthText = '';
+                let strengthClass = '';
+                
+                switch(strength) {
+                    case 'weak':
+                        strengthText = i18nMessages.passwordStrengthWeak;
+                        strengthClass = 'strength-weak';
+                        break;
+                    case 'fair':
+                        strengthText = i18nMessages.passwordStrengthFair;
+                        strengthClass = 'strength-fair';
+                        break;
+                    case 'good':
+                        strengthText = i18nMessages.passwordStrengthGood;
+                        strengthClass = 'strength-good';
+                        break;
+                    case 'strong':
+                        strengthText = i18nMessages.passwordStrengthStrong;
+                        strengthClass = 'strength-strong';
+                        break;
+                }
+                
+                strengthDiv.innerHTML = `${strengthText}`;
+                strengthDiv.className = `password-strength ${strengthClass}`;
             }
             
             // Display error message for a specific field
@@ -424,6 +547,9 @@
                 const password = passwordInput.value;
                 const passwordConfirm = passwordConfirmInput ? passwordConfirmInput.value : '';
                 
+                // Update password strength indicator
+                updatePasswordStrength(password);
+                
                 // Check if password is empty
                 if (password === '') {
                     showError('password1', i18nMessages.passwordRequired);
@@ -433,6 +559,18 @@
                 // Check minimum length (8 characters)
                 if (password.length < 8) {
                     showError('password1', i18nMessages.passwordMinLength);
+                    return false;
+                }
+                
+                // Check for non-English characters in password
+                if (hasNonEnglishInPassword(password)) {
+                    showError('password1', i18nMessages.passwordEnglishOnly);
+                    return false;
+                }
+                
+                // Check if password contains only allowed characters
+                if (!isValidPassword(password)) {
+                    showError('password1', i18nMessages.passwordInvalidChars);
                     return false;
                 }
                 
@@ -532,6 +670,8 @@
             // ==========================================
             // LIVE INPUT FILTERING (Blocks invalid characters)
             // ==========================================
+            
+            // Username input filtering
             const usernameInput = document.getElementById('id_username');
             if (usernameInput) {
                 usernameInput.addEventListener('input', function(e) {
@@ -563,6 +703,40 @@
                     
                     // Update character counter
                     updateCharCounter(this.value);
+                });
+            }
+            
+            // Password input filtering
+            const passwordInput = document.getElementById('id_password1');
+            if (passwordInput) {
+                passwordInput.addEventListener('input', function(e) {
+                    const value = this.value;
+                    const lastChar = value[value.length - 1];
+                    
+                    // Block non-English characters and disallowed special chars
+                    if (lastChar && !/[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(lastChar)) {
+                        this.value = value.slice(0, -1); // Remove the invalid character
+                        showError('password1', i18nMessages.passwordEnglishOnly);
+                        
+                        // Auto-clear error message after 3 seconds
+                        setTimeout(() => {
+                            clearError('password1');
+                        }, 3000);
+                    } else {
+                        clearError('password1');
+                    }
+                    
+                    // Update password strength
+                    updatePasswordStrength(this.value);
+                });
+            }
+            
+            // Password confirmation field doesn't need character filtering,
+            // but we should validate it when it changes
+            const passwordConfirmInput = document.getElementById('id_password2');
+            if (passwordConfirmInput) {
+                passwordConfirmInput.addEventListener('input', function() {
+                    validatePassword();
                 });
             }
         })();

@@ -1006,7 +1006,7 @@
             <div class="col-md-3 mb-3">
                 <div class="card">
                     <div class="card-header">
-                        <strong>{% trans "Categories" %}</strong>
+                        <strong>{%trans "Categories" %}</strong>
                     </div>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
@@ -1072,8 +1072,8 @@
                         {% empty %}
                             <!-- Fallback UI if there are no photos uploaded yet -->
                             <div class="col-12">
-                                <h3>No photos yet.</h3>
-                                <p>Use the Upload button to add your first image.</p>
+                                <h3>{%trans "No photos yet."%}</h3>
+                                <p>{%trans "Use the Upload button to add your first image."%}</p>
                             </div>
                         {% endfor %}
                     </div>
