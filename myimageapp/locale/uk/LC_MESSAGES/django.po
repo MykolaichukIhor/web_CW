@@ -670,8 +670,7 @@ msgstr "Фото успішно оновлено!"
 msgid "Photo \"{}\" deleted successfully!"
 msgstr "Фото \"{}\" успішно видалено!"
 
-#~ msgid "Sign Up"
-#~ msgstr "Зареєструватися"
+
 
 #~ msgid "Create Account"
 #~ msgstr "Створити обліковий запис"
@@ -691,9 +690,94 @@ msgstr "Фото \"{}\" успішно видалено!"
 #~ msgstr "Обрати з галереї"
 
 
-#~ msgid "Add New Photo"
-#~ msgstr "Додати нове фото"
 
+
+
+
+
+# photos/locale/uk/LC_MESSAGES/django.po
+# Ukrainian translations for Photo Gallery Signup page
+
+msgid "Sign Up"
+msgstr "Реєстрація"
+
+
+
+
+
+msgid "Log in here"
+msgstr "Увійти тут"
+
+msgid "characters"
+msgstr "символів"
+
+msgid "Switch to light theme"
+msgstr "Перемкнути на світлу тему"
+
+msgid "Switch to dark theme"
+msgstr "Перемкнути на темну тему"
+
+# Username validation messages
+msgid "Username is required"
+msgstr "Ім'я користувача обов'язкове"
+
+msgid "Username must be at least 3 characters long"
+msgstr "Ім'я користувача має містити щонайменше 3 символи"
+
+msgid "Username must be less than 31 characters"
+msgstr "Ім'я користувача має бути менше 31 символу"
+
+msgid "Only English letters (A-Z, a-z), numbers, dots (.) and underscores (_) are allowed! Please use Latin characters only."
+msgstr "Дозволено лише англійські літери (A-Z, a-z), цифри, крапки (.) та знаки підкреслення (_)! Будь ласка, використовуйте тільки латинські символи."
+
+msgid "Username can only contain: English letters (A-Z, a-z), numbers (0-9), dots (.) and underscores (_)"
+msgstr "Ім'я користувача може містити лише: англійські літери (A-Z, a-z), цифри (0-9), крапки (.) та знаки підкреслення (_)"
+
+msgid "Username cannot exceed 30 characters"
+msgstr "Ім'я користувача не може перевищувати 30 символів"
+
+# Password validation messages
+msgid "Password is required"
+msgstr "Пароль обов'язковий"
+
+msgid "Password must be at least 8 characters long"
+msgstr "Пароль має містити щонайменше 8 символів"
+
+msgid "Passwords do not match"
+msgstr "Паролі не співпадають"
+
+# Form submission message
+msgid "Please fix the errors above before submitting. Username must use only English letters and be max 30 characters."
+msgstr "Будь ласка, виправте помилки перед відправкою. Ім'я користувача має містити лише англійські літери та не перевищувати 30 символів."
+
+# Field labels (from Django's default UserCreationForm)
+
+
+
+
+
+msgid "Password confirmation"
+msgstr "Підтвердження пароля"
+
+# Help texts (from Django's default UserCreationForm)
+msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
+msgstr "Обов'язкове. Не більше 150 символів. Тільки літери, цифри та символи @/./+/-/_."
+
+msgid "Enter the same password as before, for verification."
+msgstr "Введіть той самий пароль ще раз для перевірки."
+
+# Password help texts
+msgid "Your password can't be too similar to your other personal information."
+msgstr "Ваш пароль не повинен бути надто схожим на іншу особисту інформацію."
+
+msgid "Your password must contain at least 8 characters."
+msgstr "Ваш пароль має містити щонайменше 8 символів."
+
+msgid "Your password can't be a commonly used password."
+msgstr "Ваш пароль не може бути занадто поширеним."
+
+msgid "Your password can't be entirely numeric."
+msgstr "Ваш пароль не може складатися лише з цифр."
 
 
 

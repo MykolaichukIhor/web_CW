@@ -15,7 +15,6 @@
             transition: background 0.3s ease, color 0.3s ease;
         }
         
-        
         [data-bs-theme="dark"] body {
             background: #000000;
             color: #ffffff;
@@ -93,6 +92,76 @@
         [data-bs-theme="dark"] .theme-toggle-btn {
             color: #ffffff;
         }
+
+        [data-bs-theme="dark"] select {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+
+        [data-bs-theme="dark"] select option {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        
+        [data-bs-theme="dark"] .form-select {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+
+        [data-bs-theme="dark"] .form-select option {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        
+        /* Error message styles */
+        .error-message {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .form-control.is-invalid {
+            border-color: #dc3545;
+        }
+        
+        [data-bs-theme="dark"] .form-control.is-invalid {
+            border-color: #dc3545;
+        }
+        
+        /* Character counter styles */
+        .char-counter {
+            font-size: 11px;
+            margin-top: 4px;
+            text-align: right;
+            color: #6c757d;
+        }
+        
+        .char-counter.warning {
+            color: #ffc107;
+        }
+        
+        .char-counter.danger {
+            color: #dc3545;
+        }
+        
+        [data-bs-theme="dark"] .char-counter {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        [data-bs-theme="dark"] .char-counter.warning {
+            color: #ffc107;
+        }
+        
+        [data-bs-theme="dark"] .char-counter.danger {
+            color: #dc3545;
+        }
     </style>
 </head>
 <body class="m-5">
@@ -123,9 +192,8 @@
                         <h3>{% trans "Sign Up" %}</h3>
                     </div>
                     <div class="card-body">
-                        <form method="POST" novalidate>
+                        <form method="POST" novalidate id="signupForm">
                             {% csrf_token %}
-                            
                             
                             {% if form.non_field_errors %}
                                 <div class="alert alert-danger">
@@ -135,17 +203,24 @@
                                 </div>
                             {% endif %}
                             
-                            
                             {% for field in form %}
                                 <div class="mb-3">
                                     <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
                                     {{ field }}
                                     
+                                    <!-- Character counter for username field -->
+                                    {% if field.name == 'username' %}
+                                        <div class="char-counter" id="username-counter">
+                                            <span id="username-length">0</span>/<span id="max-username-length">30</span> {% trans "characters" %}
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <!-- Additional validation error container -->
+                                    <div class="error-message" id="error-{{ field.name }}"></div>
                                     
                                     {% if field.help_text %}
                                         <div class="form-text text-muted small">{{ field.help_text|safe }}</div>
                                     {% endif %}
-                                    
                                     
                                     {% if field.errors %}
                                         <div class="text-danger mt-1 small">
@@ -170,6 +245,31 @@
 
     <script>
         (function() {
+            // ==========================================
+            // INTERNATIONALIZATION MESSAGES
+            // ==========================================
+            // These messages are populated from Django's i18n system
+            const i18nMessages = {
+                // Username validation messages
+                usernameRequired: "{% trans 'Username is required' %}",
+                usernameMinLength: "{% trans 'Username must be at least 3 characters long' %}",
+                usernameMaxLength: "{% trans 'Username must be less than 31 characters' %}",
+                usernameEnglishOnly: "{% trans 'Only English letters (A-Z, a-z), numbers, dots (.) and underscores (_) are allowed! Please use Latin characters only.' %}",
+                usernameAllowedChars: "{% trans 'Username can only contain: English letters (A-Z, a-z), numbers (0-9), dots (.) and underscores (_)' %}",
+                usernameMaxLimit: "{% trans 'Username cannot exceed 30 characters' %}",
+                
+                // Password validation messages
+                passwordRequired: "{% trans 'Password is required' %}",
+                passwordMinLength: "{% trans 'Password must be at least 8 characters long' %}",
+                passwordMismatch: "{% trans 'Passwords do not match' %}",
+                
+                // Form submission messages
+                fixErrors: "{% trans 'Please fix the errors above before submitting. Username must use only English letters and be max 30 characters.' %}"
+            };
+            
+            // ==========================================
+            // THEME TOGGLE FUNCTIONALITY
+            // ==========================================
             const themeToggle = document.getElementById('themeToggle');
             const html = document.documentElement;
             
@@ -190,22 +290,281 @@
                 const icon = themeToggle.querySelector('i');
                 if (theme === 'dark') {
                     icon.className = 'fas fa-sun';
-                    themeToggle.title = 'Switch to light theme';
+                    themeToggle.title = "{% trans 'Switch to light theme' %}";
                 } else {
                     icon.className = 'fas fa-moon';
-                    themeToggle.title = 'Switch to dark theme';
+                    themeToggle.title = "{% trans 'Switch to dark theme' %}";
                 }
             }
             
+            // ==========================================
+            // USERNAME VALIDATION (English letters only, max 30 chars)
+            // ==========================================
             
+            // Maximum username length constant
+            const MAX_USERNAME_LENGTH = 30;
+            
+            // Check if username contains only allowed characters (English letters, numbers, dots, underscores)
+            function isValidUsername(username) {
+                // Allowed: a-z, A-Z, 0-9, _ (underscore), . (dot)
+                const englishRegex = /^[a-zA-Z0-9_.]+$/;
+                return englishRegex.test(username);
+            }
+            
+            // Check if username contains non-English characters (Ukrainian, Russian, etc.)
+            function hasNonEnglishLetters(username) {
+                // Search for any non-ASCII characters
+                const nonEnglishRegex = /[^\x00-\x7F]/;
+                return nonEnglishRegex.test(username);
+            }
+            
+            // Update character counter with visual feedback
+            function updateCharCounter(username) {
+                const counterSpan = document.getElementById('username-length');
+                const counterDiv = document.getElementById('username-counter');
+                
+                if (counterSpan && counterDiv) {
+                    const length = username.length;
+                    counterSpan.textContent = length;
+                    
+                    // Remove existing classes
+                    counterDiv.classList.remove('warning', 'danger');
+                    
+                    // Add appropriate class based on length
+                    if (length >= MAX_USERNAME_LENGTH) {
+                        counterDiv.classList.add('danger');
+                    } else if (length >= MAX_USERNAME_LENGTH - 5) {
+                        counterDiv.classList.add('warning');
+                    }
+                }
+            }
+            
+            // Display error message for a specific field
+            function showError(fieldName, message) {
+                const errorDiv = document.getElementById(`error-${fieldName}`);
+                const inputField = document.getElementById(`id_${fieldName}`);
+                
+                if (errorDiv) {
+                    errorDiv.textContent = message;
+                    errorDiv.classList.add('show');
+                }
+                
+                if (inputField) {
+                    inputField.classList.add('is-invalid');
+                }
+            }
+            
+            // Clear error message for a specific field
+            function clearError(fieldName) {
+                const errorDiv = document.getElementById(`error-${fieldName}`);
+                const inputField = document.getElementById(`id_${fieldName}`);
+                
+                if (errorDiv) {
+                    errorDiv.textContent = '';
+                    errorDiv.classList.remove('show');
+                }
+                
+                if (inputField) {
+                    inputField.classList.remove('is-invalid');
+                }
+            }
+            
+            // Validate username field
+            function validateUsername() {
+                const usernameInput = document.getElementById('id_username');
+                if (!usernameInput) return true;
+                
+                const username = usernameInput.value.trim();
+                clearError('username');
+                updateCharCounter(username);
+                
+                // Check if username is empty
+                if (username === '') {
+                    showError('username', i18nMessages.usernameRequired);
+                    return false;
+                }
+                
+                // Check minimum length (3 characters)
+                if (username.length < 3) {
+                    showError('username', i18nMessages.usernameMinLength);
+                    return false;
+                }
+                
+                // Check maximum length (30 characters)
+                if (username.length > MAX_USERNAME_LENGTH) {
+                    showError('username', i18nMessages.usernameMaxLength);
+                    return false;
+                }
+                
+                // Check for non-English letters (Ukrainian, Russian, etc.)
+                if (hasNonEnglishLetters(username)) {
+                    showError('username', i18nMessages.usernameEnglishOnly);
+                    return false;
+                }
+                
+                // Check for allowed characters
+                if (!isValidUsername(username)) {
+                    showError('username', i18nMessages.usernameAllowedChars);
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            // Validate password fields
+            function validatePassword() {
+                const passwordInput = document.getElementById('id_password1');
+                const passwordConfirmInput = document.getElementById('id_password2');
+                
+                if (!passwordInput) return true;
+                
+                clearError('password1');
+                clearError('password2');
+                
+                const password = passwordInput.value;
+                const passwordConfirm = passwordConfirmInput ? passwordConfirmInput.value : '';
+                
+                // Check if password is empty
+                if (password === '') {
+                    showError('password1', i18nMessages.passwordRequired);
+                    return false;
+                }
+                
+                // Check minimum length (8 characters)
+                if (password.length < 8) {
+                    showError('password1', i18nMessages.passwordMinLength);
+                    return false;
+                }
+                
+                // Check if passwords match
+                if (password !== passwordConfirm) {
+                    showError('password2', i18nMessages.passwordMismatch);
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            // ==========================================
+            // EVENT LISTENERS AND INITIALIZATION
+            // ==========================================
             document.addEventListener('DOMContentLoaded', function() {
+                // Add Bootstrap classes to form inputs
                 const inputs = document.querySelectorAll('input, select, textarea');
                 inputs.forEach(input => {
                     if (input.type !== 'hidden' && input.type !== 'checkbox' && input.type !== 'submit') {
                         input.classList.add('form-control');
                     }
                 });
+                
+                // Initialize character counter for username
+                const usernameField = document.getElementById('id_username');
+                if (usernameField) {
+                    updateCharCounter(usernameField.value);
+                    
+                    // Add validation on input event (real-time)
+                    usernameField.addEventListener('input', function() {
+                        validateUsername();
+                    });
+                    
+                    // Add validation on blur event (when leaving the field)
+                    usernameField.addEventListener('blur', function() {
+                        validateUsername();
+                    });
+                }
+                
+                // Add password validation listeners
+                const passwordField = document.getElementById('id_password1');
+                const passwordConfirmField = document.getElementById('id_password2');
+                
+                if (passwordField) {
+                    passwordField.addEventListener('input', function() {
+                        validatePassword();
+                    });
+                    
+                    passwordField.addEventListener('blur', function() {
+                        validatePassword();
+                    });
+                }
+                
+                if (passwordConfirmField) {
+                    passwordConfirmField.addEventListener('input', function() {
+                        validatePassword();
+                    });
+                    
+                    passwordConfirmField.addEventListener('blur', function() {
+                        validatePassword();
+                    });
+                }
+                
+                // Intercept form submission
+                const form = document.getElementById('signupForm');
+                if (form) {
+                    form.addEventListener('submit', function(e) {
+                        const isUsernameValid = validateUsername();
+                        const isPasswordValid = validatePassword();
+                        
+                        // Prevent form submission if validation fails
+                        if (!isUsernameValid || !isPasswordValid) {
+                            e.preventDefault();
+                            
+                            // Show alert message at the top of the form
+                            let alertDiv = document.querySelector('.alert-danger');
+                            if (!alertDiv || alertDiv === form.querySelector('.alert-danger')) {
+                                alertDiv = document.createElement('div');
+                                alertDiv.className = 'alert alert-danger';
+                                form.insertBefore(alertDiv, form.firstChild);
+                            }
+                            
+                            alertDiv.innerHTML = i18nMessages.fixErrors;
+                            alertDiv.style.display = 'block';
+                            
+                            // Scroll to the first error
+                            const firstError = document.querySelector('.is-invalid');
+                            if (firstError) {
+                                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                        }
+                    });
+                }
             });
+            
+            // ==========================================
+            // LIVE INPUT FILTERING (Blocks invalid characters)
+            // ==========================================
+            const usernameInput = document.getElementById('id_username');
+            if (usernameInput) {
+                usernameInput.addEventListener('input', function(e) {
+                    const value = this.value;
+                    const lastChar = value[value.length - 1];
+                    
+                    // Block characters that are not English letters, numbers, underscore, or dot
+                    if (lastChar && !/[a-zA-Z0-9_.]/.test(lastChar)) {
+                        this.value = value.slice(0, -1); // Remove the invalid character
+                        showError('username', i18nMessages.usernameEnglishOnly);
+                        
+                        // Auto-clear error message after 3 seconds
+                        setTimeout(() => {
+                            clearError('username');
+                        }, 3000);
+                    } else {
+                        clearError('username');
+                    }
+                    
+                    // Enforce maximum length limit
+                    if (this.value.length > MAX_USERNAME_LENGTH) {
+                        this.value = this.value.slice(0, MAX_USERNAME_LENGTH);
+                        showError('username', i18nMessages.usernameMaxLimit);
+                        
+                        setTimeout(() => {
+                            clearError('username');
+                        }, 3000);
+                    }
+                    
+                    // Update character counter
+                    updateCharCounter(this.value);
+                });
+            }
         })();
     </script>
 </body>
